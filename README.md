@@ -4,7 +4,7 @@
   </a>
 </p>
 
-# XMLTV 1.0.0
+# XMLTV 1.1.2
 
 ## Table of Contents
 
@@ -28,10 +28,6 @@
   * [Authors](#authors)
   * [Resources](#resources)
 
-## Project Status
-
-[![Build Status](https://api.travis-ci.org/XMLTV/xmltv.svg?branch=master)](https://travis-ci.org/github/XMLTV/xmltv)
-
 ## Description
 
 The XMLTV project provides a suite of software to gather television listings, process listings data, and help organize your TV viewing.
@@ -52,6 +48,8 @@ To see what has changed in the current XMLTV release please check the [Changes](
 
 XMLTV is packaged for most major Linux distributions and FreeBSD. It is recommended that users install XMLTV using their preferred package manager.
 
+[![Packaging status](https://repology.org/badge/vertical-allrepos/xmltv.svg?minversion=1.0.0&columns=3)](https://repology.org/project/xmltv/versions)
+
 #### Debian/Ubuntu
 
 ```bash
@@ -66,13 +64,13 @@ XMLTV is packaged for most major Linux distributions and FreeBSD. It is recommen
 
 ### Windows
 
-Windows users are strongly advised to use the [pre-built binary](http://alpha-exe.xmltv.org/) as installing all prerequisites is non-trivial.
+Windows users are strongly advised to use the [pre-built binary](http://alpha-exe.xmltv.org/) as installing all prerequisites is non-trivial. Please also check the Github release page for a pre-built release binary.
 
 For those who want to give it a go, please read the [EXE build instructions](doc/exe_build.html). The instructions can be used for both building xmltv.exe as well as a local install.
 
 ### MacOS
 
-XMLTV is packaged for MacOS in the [Fink Project](http://pdb.finkproject.org/pdb/package.php/xmltv)
+XMLTV is packaged for MacOS in the [MacPorts Project](https://ports.macports.org/port/xmltv/)
 
 ## Installation (Source)
 
@@ -261,7 +259,6 @@ We run the following mailing lists:
 
 ### IRC
 
-Finally, we run an IRC channel #xmltv on Freenode. Please join us!
+We run an IRC channel #xmltv on Libera Chat. Please join us!
 
-
--- Nick Morrott, knowledgejunkie@gmail.com, 2021-02-07
+-- Nick Morrott, knowledgejunkie@gmail.com, 2022-04-18

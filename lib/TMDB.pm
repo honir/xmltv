@@ -11,10 +11,13 @@ package XMLTV::TMDB;
 #
 # CHANGE LOG
 # 0.1 = development version (no public release)
-# 0.2 = 
-#		change API calls to use 'append_to_response' to reduce number of calls
+# 0.2 = change API calls to use 'append_to_response' to reduce number of calls
+# 0.3 = added content-ids to output xml
+# 0.4 = added <image> and <url> elements to cast & crew
+#       added <image> to programme (in place of <url>)
+#       min version of XMLTV.pm is > 1.0.0
 #
-our $VERSION = '0.2';
+our $VERSION = '0.4';
 
 
 use LWP::Protocol::https;
@@ -23,6 +26,7 @@ use HTTP::Response;
 use Data::Dumper qw(Dumper);
 
 #---------------------------------------------------------------
+use XMLTV 1.0.1;        # min version of xmltv.pm required
 use XMLTV::TMDB::API;
 # version 0.04 of WWW::TMDB::API is broken for movie searching (TMDB changed the API with a breaking change)
 # a custom version was created for use here
@@ -74,7 +78,7 @@ sub unique (@)			# de-dupe two (or more) arrays   TODO: make this case insensiti
 sub uniquemulti (@)		# de-dupe two (or more) array of arrays on first value   TODO: make this case insensitive
 {
     my %h;
-    map { $h{$_->[0]}{$_->[0]}++ == 0 ? $_ : () } @_;
+    map { $h{$_->[0]}++ == 0 ? $_ : () } @_;
 }
 
 #---------------------------------------------------------------------
@@ -86,8 +90,10 @@ sub new
 	my ($type) = shift;
 	my $self={ @_ };			# remaining args become attributes
 
+	$self->{wwwUrl} = 'https://www.themoviedb.org/';
+
 	for ('apikey', 'verbose') {
-	die "invalid usage - no $_" if ( !defined($self->{$_}));
+		die "invalid usage - no $_" if ( !defined($self->{$_}));
 	}
 	$self->{replaceDates}=0			if ( !defined($self->{replaceDates}));
 	$self->{replaceTitles}=0		if ( !defined($self->{replaceTitles}));
@@ -120,14 +126,18 @@ sub new
 	$self->{updatePlot}=0			if ( !defined($self->{updatePlot}));			# default is to NOT add plot
 	$self->{updateReviews}=1		if ( !defined($self->{updateReviews}));			# default is to add reviews
 	$self->{updateRuntime}=1		if ( !defined($self->{updateRuntime}));			# add programme's runtime
+	$self->{updateActorRole}=1		if ( !defined($self->{updateActorRole}));		# add roles to cast in output
 	$self->{updateImage}=1			if ( !defined($self->{updateImage}));			# add programme's poster image
+	$self->{updateCastImage}=1		if ( !defined($self->{updateCastImage}));		# add image url to actors and directors (needs updateActors/updateDirectors)
+	$self->{updateCastUrl}=1		if ( !defined($self->{updateCastUrl}));			# add url to actors and directors webpage (needs updateActors/updateDirectors)
+	$self->{updateContentId}=1		if ( !defined($self->{updateContentId}));		# add programme's id
 
 	$self->{numActors}=3			if ( !defined($self->{numActors}));		 		# default is to add top 3 actors
 	$self->{numReviews}=1			if ( !defined($self->{numReviews}));			# default is to add top 1 review
-	$self->{addActorRoles}=1		if ( !defined($self->{addActorRoles}));			# add roles to cast in output
 	$self->{removeYearFromTitles}=1	if ( !defined($self->{removeYearFromTitles}));	# strip trailing "(2021)" from title
 	$self->{getYearFromTitles}=1	if ( !defined($self->{getYearFromTitles}));		# if no 'date' incoming then see if title ends with a "(year)"
 	$self->{moviesonly}=0			if ( !defined($self->{moviesonly}));			# default to augment both movies and tv
+	$self->{minVotes}=50			if ( !defined($self->{minVotes}));				# default to needing 50 votes before 'star-rating' value is accepted
 
 
 	# default is not to cache lookups
@@ -603,8 +613,11 @@ sub getMovieOrTvIdDetails($$$)
 	my $profile_base = $self->{tmdb_conf}->{images}->{base_url} . $self->{tmdb_conf}->{images}->{profile_sizes}[1];		# arbitrarily pick the second one (expecting w185 = 185x278 )	
 	#
 	# set base url for movie poster images
-	my $poster_base = $self->{tmdb_conf}->{images}->{base_url} . $self->{tmdb_conf}->{images}->{poster_sizes}[4];		# arbitrarily pick the fifth one (expecting w500 = 500x750 )
-	my $backdrop_base = $self->{tmdb_conf}->{images}->{base_url} . $self->{tmdb_conf}->{images}->{backdrop_sizes}[1];	# arbitrarily pick the second one (expecting w780 = 780x439 )
+	my $poster_base     = $self->{tmdb_conf}->{images}->{base_url} . $self->{tmdb_conf}->{images}->{poster_sizes}[4];	# arbitrarily pick the fifth one (expecting w500 = 500x750 )
+	my $backdrop_base   = $self->{tmdb_conf}->{images}->{base_url} . $self->{tmdb_conf}->{images}->{backdrop_sizes}[1];	# arbitrarily pick the second one (expecting w780 = 780x439 )
+	# smaller versions:
+	my $poster_base_s   = $self->{tmdb_conf}->{images}->{base_url} . $self->{tmdb_conf}->{images}->{poster_sizes}[0];	# arbitrarily pick the first one (expecting w92 = 92x138 )
+	my $backdrop_base_s = $self->{tmdb_conf}->{images}->{base_url} . $self->{tmdb_conf}->{images}->{backdrop_sizes}[0];	# arbitrarily pick the first one (expecting w300 = 300x169 )
 	
 	
 	# get the movie details from TMDB
@@ -798,9 +811,12 @@ sub getMovieOrTvIdDetails($$$)
 	# new stuff not in IMDB.pm
 	#
 	$results->{runtime} 			= $tmdb_info->{runtime} 						if defined $tmdb_info->{runtime} && $tmdb_info->{runtime} > 0;
+	$results->{tmdb_id} 			= $tmdb_info->{id} 								if defined $tmdb_info->{id};
 	$results->{imdb_id} 			= $tmdb_info->{imdb_id} 						if defined $tmdb_info->{imdb_id};
 	$results->{posterurl} 			= $poster_base.$tmdb_info->{poster_path} 		if defined $tmdb_info->{poster_path};
 	$results->{backdropurl} 		= $backdrop_base.$tmdb_info->{backdrop_path} 	if defined $tmdb_info->{backdrop_path};
+	$results->{posterurl_sm} 		= $poster_base_s.$tmdb_info->{poster_path} 		if defined $tmdb_info->{poster_path};
+	$results->{backdropurl_sm} 		= $backdrop_base_s.$tmdb_info->{backdrop_path} 	if defined $tmdb_info->{backdrop_path};
 	
 		
 	if ( !defined($results) ) {
@@ -1278,6 +1294,15 @@ sub applyFound($$$)
 			}
 		}
 
+		# add url pointing to programme on www.themoviedb.org
+		my $url2;
+		if ( defined($details->{tmdb_id}) )
+		{
+			$url2= $self->{wwwUrl} .  ( $idInfo->{qualifier} =~ /movie/ ? 'movie' : 'tv' ) . "/" . $details->{tmdb_id};
+		}
+
+		$self->debug("adding 'url' $url2") if $url2;
+
 		# add url pointing to programme on www.imdb.com
 		my $url;
 		#
@@ -1291,19 +1316,21 @@ sub applyFound($$$)
 		{
 			$url=$idInfo->{key};
 			
-			#	{key} will include " marks if a tv series - remove these from search url [#148]
-			$url = $1.$2  if ( $url=~m/^"(.*?)"(.*)$/ );
-			
 			# encode the title
 			$url=~s/([^a-zA-Z0-9_.-])/uc sprintf("%%%02x",ord($1))/oeg;
 			$url="https://www.imdb.com/find?q=".$url."&s=tt&exact=true";
+
+			# possible altve url using 'search' instead of 'find', but there's no option for 'exact' hits only
+			# https://www.imdb.com/search/title/?title=titanic&release_date=1995-01-01,1999-12-31&view=simple
+			# c.f. https://www.imdb.com/search/title/
 		}
 		
 		$self->debug("adding 'url' $url");
 
 		if ( defined($prog->{url}) ) {
 			my @rep;
-			push(@rep, $url);
+			push(@rep, [ $url2, 'TMDB' ]) if $url2;
+			push(@rep, [ $url,  'IMDb' ]) if $url;
 			for (@{$prog->{url}}) {
 				# skip urls for imdb.com that we're probably safe to replace
 				if ( !m;^http://us.imdb.com/M/title-exact;o && !m;^https://www.imdb.com/find;o ) {
@@ -1313,9 +1340,9 @@ sub applyFound($$$)
 			$prog->{url}=\@rep;
 		}
 		else {
-			push(@{$prog->{url}}, $url);
+			push(@{$prog->{url}}, [ $url2, 'TMDB' ]) if $url2;
+			push(@{$prog->{url}}, [ $url,  'IMDb' ]) if $url;
 		}
-			
 	}
 
 
@@ -1353,7 +1380,33 @@ sub applyFound($$$)
 
 				# add top 3 billing directors from TMDB data
 				# preserve all existing directors from the prog + de-dupe the list
-				my @list = unique( (splice(@{$details->{directors}},0,3)), @{ $prog->{credits}->{director} } );
+				my @list;
+				if ( $self->{updateCastImage} || $self->{updateCastUrl} ) {
+
+					# add director image
+					foreach (@{ $details->{directorsplus} }) {
+
+						my $subels = {};
+
+						# add actor image
+						# TODO : remove existing image(s) / avoid duplicates
+						$subels->{image} = [[ $_->{imageurl}, {'system'=>'TMDB','type'=>'person'} ]] if $self->{updateCastImage} && $_->{imageurl} ne '';
+
+						# add actor url
+						$subels->{url} = [[ $self->{wwwUrl} . 'person/' . $_->{id}, 'TMDB' ]] if $self->{updateCastUrl};
+
+						push(@list, [ $_->{name}, $subels ] );
+					}
+
+					# merge and dedupe the lists from incoming xml + tmdb. Give TMDB entries priority.
+					@list = uniquemulti( splice(@list,0,3), map{ ref($_) eq 'ARRAY' && scalar($_) > 1 ? $_ : [ $_ ] } @{ $prog->{credits}->{director} } ); 	# 'map' because uniquemulti needs an array
+
+					@list = map{ ( ref($_) eq 'ARRAY' && scalar(@$_) == 1 ) ? shift @$_ : $_ } @list;       # flatten any single-index arrays
+
+				} else {
+					# simple merge and dedupe
+					@list = unique( splice(@{$details->{directors}},0,3), @{ $prog->{credits}->{director} } );
+				}
 				#
 				$prog->{credits}->{director}=\@list;
 			}
@@ -1376,20 +1429,36 @@ sub applyFound($$$)
 			# preserve all existing actors from the prog + de-dupe the list
 			#
 			my @list;
-			if ( $self->{addActorRoles} ) {
-				
-				# add character attribute to actor name				
-				foreach my $actorplus (@{ $details->{actorsplus} }) {
-					push(@list, [ $actorplus->{name}, $actorplus->{character} ] ); 
+			if ( $self->{updateActorRole} || $self->{updateCastImage} || $self->{updateCastUrl} ) {
+
+				foreach (@{ $details->{actorsplus} }) {
+
+					# add character attribute to actor name
+					my $character = ( $self->{updateActorRole} ? $_->{character} : '' );
+
+					my $subels = {};
+
+					# add actor image
+					# TODO : remove existing image(s) / avoid duplicates
+					$subels->{image} = [[ $_->{imageurl}, {'system'=>'TMDB','type'=>'person'} ]] if $self->{updateCastImage} && $_->{imageurl} ne '';
+
+					# add actor url
+					$subels->{url} = [[ $self->{wwwUrl} . 'person/' . $_->{id}, 'TMDB' ]] if $self->{updateCastUrl};
+
+					push(@list, [ $_->{name}, $character, '', $subels ] );
 				}
 				
-				# merge and dedupe	
-				# note: will ignore empty 'role' attribute
-				@list = uniquemulti( (splice(@list,0,$self->{numActors})), map{ ref($_) eq 'ARRAY' && scalar($_) > 1 ? $_ : [ $_, '' ] } @{ $prog->{credits}->{actor} } ); 	# 'map' because uniquemulti needs an array
-				
+				# merge and dedupe the lists from incoming xml + tmdb. Give TMDB entries priority.
+				#  note: will ignore 'role' attribute - i.e. de-dupe on 'name' only
+				@list = uniquemulti( splice(@list,0,$self->{numActors}), map{ ref($_) eq 'ARRAY' && scalar($_) > 1 ? $_ : [ $_ ] } @{ $prog->{credits}->{actor} } ); 	# 'map' because uniquemulti needs an array
+
+				@list = map{ ( scalar(@$_) == 3 && @$_[2] eq '' ) ? [ @$_[0], @$_[1] ]  : $_ } @list;   # remove blank 'image' values
+				@list = map{ ( scalar(@$_) == 2 && @$_[1] eq '' ) ? @$_[0] : $_ } @list;                # remove blank 'character' values
+				@list = map{ ( ref($_) eq 'ARRAY' && scalar(@$_) == 1 ) ? shift @$_ : $_ } @list;       # flatten any single-index arrays (as per the xmltv data struct)
+
 			} else {
-				# simple merge and dedupe	
-				@list = unique( (splice(@{$details->{actors}},0,$self->{numActors})), @{ $prog->{credits}->{actor} } );
+				# simple merge and dedupe
+				@list = unique( splice(@{$details->{actors}},0,$self->{numActors}), @{ $prog->{credits}->{actor} } );
 			}
 			#
 			$prog->{credits}->{actor}=\@list;
@@ -1408,8 +1477,8 @@ sub applyFound($$$)
 				$prog->{credits}->{presenter}=$details->{presenter};
 			}
 		}
-		
-		
+
+
 		# ---- update commentators list
 		if ( $self->{updateCommentators} && defined($details->{commentator}) ) {
 			if ( $idInfo->{qualifier} eq "tv_series" ) {		# only do this for TV (not movies as 'commentator' might be a valid character)
@@ -1422,8 +1491,8 @@ sub applyFound($$$)
 				$prog->{credits}->{commentator}=$details->{commentator};
 			}
 		}
-		
-		
+
+
 		# ---- update guests list
 		if ( $self->{updateGuests} && defined($details->{guest}) ) {
 			if ( $idInfo->{qualifier} eq "tv_series" ) {		# only do this for TV (not movies as 'guest' might be a valid character)
@@ -1437,7 +1506,7 @@ sub applyFound($$$)
 			}
 		}
 
-		
+
 		# ---- update categories (genres) list
 		if ( $self->{updateCategoriesWithGenres} ) {		# deprecated?
 			if ( defined($details->{genres}) ) {
@@ -1461,7 +1530,7 @@ sub applyFound($$$)
 			}
 			$prog->{category}=\@categories;
 		}
-		
+
 
 		# ---- update ratings (film classifications)
 		if ( $self->{updateRatings} ) {
@@ -1484,16 +1553,23 @@ sub applyFound($$$)
 
 		# ---- update star ratings
 		if ( $self->{updateStarRatings} && defined($details->{ratingRank}) ) {
-			if ( $self->{replaceStarRatings} ) {
-				if ( defined($prog->{'star-rating'}) ) {
-					$self->debug("replacing 'star-rating'");
-					delete($prog->{'star-rating'});
+
+			# ignore the TMDB rating if there are too few votes (to avoid skewed data).
+			# what's 'too few'...good question!
+			if ( $details->{ratingVotes} >= $self->{minVotes} ) {
+
+				if ( $self->{replaceStarRatings} ) {
+					if ( defined($prog->{'star-rating'}) ) {
+						$self->debug("replacing 'star-rating'");
+						delete($prog->{'star-rating'});
+					}
+					unshift( @{$prog->{'star-rating'}}, [ $details->{ratingRank} . "/10", 'TMDB User Rating' ] );
 				}
-				unshift( @{$prog->{'star-rating'}}, [ $details->{ratingRank} . "/10", 'TMDB User Rating' ] );
-			}
-			else {
-				# add TMDB User Rating in front of all other star-ratings
-				unshift( @{$prog->{'star-rating'}}, [ $details->{ratingRank} . "/10", 'TMDB User Rating' ] );
+				else {
+					# add TMDB User Rating in front of all other star-ratings
+					unshift( @{$prog->{'star-rating'}}, [ $details->{ratingRank} . "/10", 'TMDB User Rating' ] );
+				}
+
 			}
 		}
 
@@ -1543,7 +1619,7 @@ sub applyFound($$$)
 				push @{$prog->{desc}}, [ $details->{plot}, 'en' ]  if !$found;
 			}
 		}
-		
+
 
 		# ---- update runtime
 		if ( $self->{updateRuntime} ) {
@@ -1551,27 +1627,56 @@ sub applyFound($$$)
 				$prog->{length} = $details->{runtime} * 60;			# XMLTV.pm only accepts seconds
 			}
 		}
-		
+
+
+		# ---- update reference id
+		if ( $self->{updateContentId} ) {
+			# remove existing values
+			@{$prog->{'episode-num'}} = grep ( @$_[1] !~ /tmdb_id|imdb_id/, @{$prog->{'episode-num'}} );
+			# add new values
+			if ( defined($details->{tmdb_id}) ) {
+				push(@{$prog->{'episode-num'}}, [ $details->{tmdb_id}, 'tmdb_id' ] );
+			}
+			if ( defined($details->{imdb_id}) && ( $details->{imdb_id} =~ m/^tt\d*$/ ) ) {
+				push(@{$prog->{'episode-num'}}, [ $details->{imdb_id}, 'imdb_id' ] );
+			}
+		}
+
 
 		# ---- update image
 		if ( $self->{updateImage} ) {
 			if ( defined($details->{posterurl}) ) {
 				if ( $details->{posterurl} =~ m|/w500/| ) {
-					push @{$prog->{icon}}, { src => $details->{posterurl}, width => 500, height => 750 };
+					push @{$prog->{image}}, [ $details->{posterurl}, { type => 'poster', orient => 'P', size => 3, system => 'TMDB' } ];
 				} else {
-					push @{$prog->{icon}}, { src => $details->{posterurl} };
+					push @{$prog->{image}}, [ $details->{posterurl} ];
 				}
 			}
 			if ( defined($details->{backdropurl}) ) {
 				if ( $details->{backdropurl} =~ m|/w780/| ) {
-					push @{$prog->{icon}}, { src => $details->{backdropurl}, width => 780, height => 439 };
+					push @{$prog->{image}}, [ $details->{backdropurl}, { type => 'backdrop', orient => 'L', size => 3, system => 'TMDB' } ];
 				} else {
-					push @{$prog->{icon}}, { src => $details->{backdropurl} };
+					push @{$prog->{image}}, [ $details->{backdropurl} ];
+				}
+			}
+			# smaller versions
+			if ( defined($details->{posterurl_sm}) ) {
+				if ( $details->{posterurl_sm} =~ m|/w92/| ) {
+					push @{$prog->{image}}, [ $details->{posterurl_sm}, { type => 'poster', orient => 'P', size => 1, system => 'TMDB' } ];
+				} else {
+					push @{$prog->{image}}, [ $details->{posterurl_sm} ];
+				}
+			}
+			if ( defined($details->{backdropurl_sm}) ) {
+				if ( $details->{backdropurl_sm} =~ m|/w300/| ) {
+					push @{$prog->{image}}, [ $details->{backdropurl_sm}, { type => 'backdrop', orient => 'L', size => 2, system => 'TMDB' } ];
+				} else {
+					push @{$prog->{image}}, [ $details->{backdropurl_sm} ];
 				}
 			}
 		}
-		
-		
+
+
 		# ---- update reviews
 		if ( $self->{updateReviews} ) {
 			if ( $self->{replaceReviews} ) {
@@ -1590,9 +1695,8 @@ sub applyFound($$$)
 			}
 		}
 
-		
-	}
 
+	}
 
 	return($prog);
 }

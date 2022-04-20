@@ -1,5 +1,6 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl
 
+use warnings;
 use 5.008003;
 use ExtUtils::MakeMaker;
 use Config;
@@ -57,7 +58,7 @@ GetOptions('strict-deps'  => \$opt_strictdeps,  # be strict about dependencies
           );
 
 our $VERSION;
-$VERSION = '1.0.0';
+$VERSION = '1.1.2';
 
 # Fragment of Makefile text to give the directory where files should
 # be installed.  The extra '.' in the middle of the path is to avoid
@@ -321,13 +322,14 @@ my @opt_components
                     'HTTP::Request::Common' => 0, },
      },
 
-     { name => 'tv_grab_eu_xmltvse',
-       blurb => 'Grabber for Europe (xmltv.se / xmltvse)',
-       exes => [ 'grab/eu_xmltvse/tv_grab_eu_xmltvse' ],
-       prereqs => { 'Compress::Zlib' => 0,
-                    'HTTP::Cache::Transparent' => 0,
-                    'IO::Scalar'     => 0, },
-     },
+#2022-01-27 rmeden - broken due to upstream changes
+#     { name => 'tv_grab_eu_xmltvse',
+#       blurb => 'Grabber for Europe (xmltv.se / xmltvse)',
+#       exes => [ 'grab/eu_xmltvse/tv_grab_eu_xmltvse' ],
+#       prereqs => { 'Compress::Zlib' => 0,
+#                    'HTTP::Cache::Transparent' => 0,
+#                    'IO::Scalar'     => 0, },
+#     },
 
      { name  => 'tv_grab_fi',
        blurb => 'Grabber for Finland',
@@ -467,12 +469,16 @@ my @opt_components
        prereqs => { 'XML::LibXML' => 0, },
      },
 
-     # { name => 'tv_grab_pt_meo',
-     #   blurb => 'Grabber for Portugal (MEO)',
-     #   exes => [ 'grab/pt_meo/tv_grab_pt_meo' ],
-     #   prereqs => { 'DateTime'    => 0,
-     #                'XML::LibXML' => 0, },
-     # },
+     { name => 'tv_grab_pt_meo',
+       blurb => 'Grabber for Portugal (MEO)',
+       exes => [ 'grab/pt_meo/tv_grab_pt_meo' ],
+       prereqs => { 'DateTime'        => 0,
+                    'Encode'          => 0,
+                    'JSON'            => 0,
+                    'IO::File'        => 0,
+                    'File::Path'      => 0,
+                    'File::Basename'  => 0, },
+     },
 
      { name => 'tv_grab_pt_vodafone',
        blurb => 'Grabber for Portugal (Vodafone)',
@@ -931,7 +937,6 @@ END
 xmltv.exe :: $(EXE_FILES) lib/xmltv.pl lib/exe_opt.pl
 	echo $(EXE_FILES)                             >exe_files.txt
 	perl lib/exe_opt.pl $(VERSION)                >exe_opt.txt
-	echo -a exe_files.txt                        >>exe_opt.txt
 	pp_autolink -o xmltv.exe --cachedeps=pp.cache --reusable @exe_opt.txt lib/xmltv.pl $(EXE_FILES)
 	$(RM_F) exe_files.txt
 	$(RM_F) exe_opt.txt

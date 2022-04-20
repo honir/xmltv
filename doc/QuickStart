@@ -10,21 +10,15 @@ These are programs which retrieve TV listings data and output them in
 XMLTV format.  Grabbers are included for the following countries:
 
     Argentina               tv_grab_ar
-    Czech Republic          tv_grab_cz
-    Denmark                 tv_grab_dk_dr, tv_grab_dk_tvtid
     Finland                 tv_grab_fi, tv_grab_fi_sv
     France                  tv_grab_fr
-    Germany                 tv_grab_de
-    Hungary and Romania     tv_grab_huro
+    Hungary                 tv_grab_huro
     Iceland                 tv_grab_is
-    Israel                  tv_grab_il
     Italy                   tv_grab_it, tv_grab_it_dvb
-    Japan                   tv_grab_jp
-    Norway                  tv_grab_no
-    Portugal                tv_grab_pt_vodafone
+    Portugal                tv_grab_pt_meo, tv_grab_pt_vodafone
     Switzerland             tv_grab_ch_search
     Turkey                  tv_grab_tr
-    UK and Ireland          tv_grab_uk_bleb, tv_grab_uk_tvguide
+    UK and Ireland          tv_grab_uk_tvguide
     US and Canada           tv_grab_na_dd, tv_grab_na_dtv, tv_grab_na_tvmedia
 
 Grabbers are included for the following larger geographic areas:
@@ -147,6 +141,14 @@ writing them out again.  At present it requires you to download some
 for more details.
 
 
+* * tv_tmdb: enrich listings with data from The Movie Database
+
+This filter program tries to look up programmes in the publicly 
+available tmdb data and add information to them before writing them 
+out again. Registration with tmdb is required to obtain a license key. 
+See the manual page for more details.
+
+
 * * tv_to_latex: convert listings to LaTeX source
 
 To print out listings in a concise format run them through tv_to_latex
@@ -170,13 +172,6 @@ included in this release.
 This filter generates a plain text summary of listings.  The
 information included in the summary is the same as with tv_to_latex.
 
-
-* * tv_imdb: augment TV listings with imdb.com data
-
-This filter builds and uses a title indexed database of imdb plain
-text files (see http://www.imdb.com/interfaces) and inserts actors/
-actresses/directors/categories based on what imdb.com knows about
-the movies in the tv listings.
 
 * Choosers
 
