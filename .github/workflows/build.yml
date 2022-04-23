@@ -277,23 +277,23 @@ jobs:
           XML::Writer
           XML::TreePP
 
+      - name: Download Packer
+        # modify PAR::Packer to print our custom "don't panic" message
+        working-directory: /temp
+        run: |
+          # cpan -g  didn't work, so...
+          wget https://cpan.metacpan.org/authors/id/R/RS/RSCHUPP/PAR-Packer-1.054.tar.gz
+          gzip -d PAR-Packer-1.054.tar.gz
+          tar xf PAR-Packer-1.054.tar
+          cd PAR-Packer-1.054
+          sed -i '/if ( rc == -1 && errno != EEXIST)/i\    if ( rc == 0 ) fprintf(stderr,\"Note: This will take a while on first run\\\n\");' myldr/boot.c
 
-        
       - name: Install Packer
+        working-directory: /temp
         run: |
-          d=$(pwd)
-          mkdir /packer
-          cd /packer
-          
-      - name: Install Packer2
-        run: |
-          cpan -g PAR::Packer
-         
-      - name: Install Packer3
-        run: |
-          cpan --installdeps --notest .
-          cd $d
-          
+          cd PAR-Packer-1.054
+          cpanm --notest --no-interactive .
+
       - name: Show content of log files on failure
         if: ${{ failure() }}
         run: cat C:/Users/RUNNER~1/.cpanm/work/*/build.log
