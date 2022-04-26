@@ -305,10 +305,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Checkout tags
-        # need to avoid a shallow clone for git describe to work
-        run: git fetch --prune --unshallow --tags
-
 
 
 ## THIS ONE USES COMMIT ID
@@ -334,6 +330,10 @@ jobs:
 
 ## THIS ONE USES GIT DESCRIBE (TAG)
 
+      - name: Checkout tags
+        # need to avoid a shallow clone for git describe to work
+        run: git fetch --prune --unshallow --tags
+
       - name: Make version string
         id: vars
         run: |
@@ -347,7 +347,7 @@ jobs:
             $githash    = $matches[3]
           }
           if ( $gitcommits ) {
-            # zero fill
+            # zero fill the alpha
             $gitcommits = "000$gitcommits"
             $gitcommits = $gitcommits.substring($gitcommits.length-3,3)
           }
