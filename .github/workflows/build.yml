@@ -12,218 +12,218 @@ on:
     - cron: "0 0 * * 0"
 
 jobs:
-  linux-build:
-    name: Build on ${{ matrix.name }}
+  #linux-build:
+    #name: Build on ${{ matrix.name }}
 
-    runs-on: ubuntu-latest
+    #runs-on: ubuntu-latest
 
-    env:
-      RPM_PKG_MGR: dnf
-      DEBIAN_FRONTEND: noninteractive
-      TZ: Etc/UTC
+    #env:
+      #RPM_PKG_MGR: dnf
+      #DEBIAN_FRONTEND: noninteractive
+      #TZ: Etc/UTC
 
-    strategy:
-      matrix:
-        include:
-          - container: ubuntu:16.04
-            name: Ubuntu 16.06 LTS (Xenial Xerus)
-          - container: ubuntu:18.04
-            name: Ubuntu 18.04 LTS (Bionic Beaver)
-          - container: ubuntu:20.04
-            name: Ubuntu 20.04 LTS (Focal Fossa)
-          - container: ubuntu:21.10
-            name: Ubuntu 21.10 (Impish Indri)
-          - container: ubuntu:22.04
-            name: Ubuntu 22.04 LTS (Jammy Jellyfish)
-          - container: debian:stretch
-            name: Debian 9 (Stretch)
-          - container: debian:buster
-            name: Debian 10 (Buster)
-          - container: debian:bullseye
-            name: Debian 11 (Bullseye)
-          - container: debian:bookworm
-            name: Debian 12 (Bookworm)
-          - container: fedora:34
-            name: Fedora 34
-          - container: fedora:35
-            name: Fedora 35
-          - container: fedora:36
-            name: Fedora 36
-          - container: quay.io/centos/centos:centos7
-            name: CentOS 7
-          - container: quay.io/centos/centos:stream8
-            name: CentOS Stream 8
-      fail-fast: false
+    #strategy:
+      #matrix:
+        #include:
+          #- container: ubuntu:16.04
+            #name: Ubuntu 16.06 LTS (Xenial Xerus)
+          #- container: ubuntu:18.04
+            #name: Ubuntu 18.04 LTS (Bionic Beaver)
+          #- container: ubuntu:20.04
+            #name: Ubuntu 20.04 LTS (Focal Fossa)
+          #- container: ubuntu:21.10
+            #name: Ubuntu 21.10 (Impish Indri)
+          #- container: ubuntu:22.04
+            #name: Ubuntu 22.04 LTS (Jammy Jellyfish)
+          #- container: debian:stretch
+            #name: Debian 9 (Stretch)
+          #- container: debian:buster
+            #name: Debian 10 (Buster)
+          #- container: debian:bullseye
+            #name: Debian 11 (Bullseye)
+          #- container: debian:bookworm
+            #name: Debian 12 (Bookworm)
+          #- container: fedora:34
+            #name: Fedora 34
+          #- container: fedora:35
+            #name: Fedora 35
+          #- container: fedora:36
+            #name: Fedora 36
+          #- container: quay.io/centos/centos:centos7
+            #name: CentOS 7
+          #- container: quay.io/centos/centos:stream8
+            #name: CentOS Stream 8
+      #fail-fast: false
 
-    container:
-      image: ${{ matrix.container }}
+    #container:
+      #image: ${{ matrix.container }}
 
-    steps:
-      - name: Detect OS release
-        run: |
-          . /etc/os-release && echo "OS_RELEASE_ID=$ID" >> $GITHUB_ENV
-          . /etc/os-release && echo "OS_RELEASE_VERSION=$VERSION_ID" >> $GITHUB_ENV
-          . /etc/os-release && echo "OS_RELEASE_VERSION_MAJOR=${VERSION_ID%%.*}" >> $GITHUB_ENV
+    #steps:
+      #- name: Detect OS release
+        #run: |
+          #. /etc/os-release && echo "OS_RELEASE_ID=$ID" >> $GITHUB_ENV
+          #. /etc/os-release && echo "OS_RELEASE_VERSION=$VERSION_ID" >> $GITHUB_ENV
+          #. /etc/os-release && echo "OS_RELEASE_VERSION_MAJOR=${VERSION_ID%%.*}" >> $GITHUB_ENV
 
-      - name: Adjust package manager for EL 7
-        run: echo "RPM_PKG_MGR=yum" >> $GITHUB_ENV
-        if: |
-          env.OS_RELEASE_ID == 'centos' && env.OS_RELEASE_VERSION == '7'
+      #- name: Adjust package manager for EL 7
+        #run: echo "RPM_PKG_MGR=yum" >> $GITHUB_ENV
+        #if: |
+          #env.OS_RELEASE_ID == 'centos' && env.OS_RELEASE_VERSION == '7'
 
-      - name: Add powertools repo for EL 8
-        run: ${{env.RPM_PKG_MGR}} config-manager --set-enabled powertools
-        if: |
-          env.OS_RELEASE_ID == 'centos' && env.OS_RELEASE_VERSION == '8'
+      #- name: Add powertools repo for EL 8
+        #run: ${{env.RPM_PKG_MGR}} config-manager --set-enabled powertools
+        #if: |
+          #env.OS_RELEASE_ID == 'centos' && env.OS_RELEASE_VERSION == '8'
 
-      - name: Add EPEL repo for EL linux
-        run: ${{env.RPM_PKG_MGR}} -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-${{env.OS_RELEASE_VERSION_MAJOR}}.noarch.rpm
-        if: |
-          env.OS_RELEASE_ID == 'centos'
+      #- name: Add EPEL repo for EL linux
+        #run: ${{env.RPM_PKG_MGR}} -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-${{env.OS_RELEASE_VERSION_MAJOR}}.noarch.rpm
+        #if: |
+          #env.OS_RELEASE_ID == 'centos'
 
-      - name: Update Debian OS
-        run: |
-          apt-get update -q -y
-          apt-get upgrade -q -y
-        if: |
-          env.OS_RELEASE_ID == 'debian' || env.OS_RELEASE_ID == 'ubuntu'
+      #- name: Update Debian OS
+        #run: |
+          #apt-get update -q -y
+          #apt-get upgrade -q -y
+        #if: |
+          #env.OS_RELEASE_ID == 'debian' || env.OS_RELEASE_ID == 'ubuntu'
 
-      - name: Update Redhat OS
-        run: ${{env.RPM_PKG_MGR}} upgrade -y
-        if: |
-          env.OS_RELEASE_ID == 'centos' || env.OS_RELEASE_ID == 'fedora'
+      #- name: Update Redhat OS
+        #run: ${{env.RPM_PKG_MGR}} upgrade -y
+        #if: |
+          #env.OS_RELEASE_ID == 'centos' || env.OS_RELEASE_ID == 'fedora'
 
-      - name: Install perl requirements for Debian systems
-        run: >
-          apt-get install -q -y
-          libarchive-zip-perl
-          libcgi-pm-perl
-          libdata-dump-perl
-          libdate-calc-perl
-          libdate-manip-perl
-          libdatetime-format-iso8601-perl
-          libdatetime-format-sqlite-perl
-          libdatetime-format-strptime-perl
-          libdatetime-perl
-          libdatetime-timezone-perl
-          libdbd-sqlite3-perl
-          libdbi-perl
-          libfile-chdir-perl
-          libfile-homedir-perl
-          libfile-slurp-perl
-          libfile-which-perl
-          libhtml-parser-perl
-          libhtml-tree-perl
-          libhttp-cache-transparent-perl
-          libhttp-cookies-perl
-          libhttp-message-perl
-          libio-stringy-perl
-          libjson-perl
-          libjson-xs-perl
-          liblingua-preferred-perl
-          liblinux-dvb-perl
-          liblist-moreutils-perl
-          liblog-tracemessages-perl
-          liblwp-protocol-https-perl
-          liblwp-useragent-determined-perl
-          libperlio-gzip-perl
-          libsoap-lite-perl
-          libterm-progressbar-perl
-          libterm-readkey-perl
-          libtimedate-perl
-          libtk-tablematrix-perl
-          libtry-tiny-perl
-          libunicode-string-perl
-          liburi-encode-perl
-          liburi-perl
-          libwww-perl
-          libxml-dom-perl
-          libxml-libxml-perl
-          libxml-libxslt-perl
-          libxml-parser-perl
-          libxml-simple-perl
-          libxml-treepp-perl
-          libxml-twig-perl
-          libxml-writer-perl
-          make
-          perl
-          perl-tk
-        if: |
-          env.OS_RELEASE_ID == 'debian' || env.OS_RELEASE_ID == 'ubuntu'
+      #- name: Install perl requirements for Debian systems
+        #run: >
+          #apt-get install -q -y
+          #libarchive-zip-perl
+          #libcgi-pm-perl
+          #libdata-dump-perl
+          #libdate-calc-perl
+          #libdate-manip-perl
+          #libdatetime-format-iso8601-perl
+          #libdatetime-format-sqlite-perl
+          #libdatetime-format-strptime-perl
+          #libdatetime-perl
+          #libdatetime-timezone-perl
+          #libdbd-sqlite3-perl
+          #libdbi-perl
+          #libfile-chdir-perl
+          #libfile-homedir-perl
+          #libfile-slurp-perl
+          #libfile-which-perl
+          #libhtml-parser-perl
+          #libhtml-tree-perl
+          #libhttp-cache-transparent-perl
+          #libhttp-cookies-perl
+          #libhttp-message-perl
+          #libio-stringy-perl
+          #libjson-perl
+          #libjson-xs-perl
+          #liblingua-preferred-perl
+          #liblinux-dvb-perl
+          #liblist-moreutils-perl
+          #liblog-tracemessages-perl
+          #liblwp-protocol-https-perl
+          #liblwp-useragent-determined-perl
+          #libperlio-gzip-perl
+          #libsoap-lite-perl
+          #libterm-progressbar-perl
+          #libterm-readkey-perl
+          #libtimedate-perl
+          #libtk-tablematrix-perl
+          #libtry-tiny-perl
+          #libunicode-string-perl
+          #liburi-encode-perl
+          #liburi-perl
+          #libwww-perl
+          #libxml-dom-perl
+          #libxml-libxml-perl
+          #libxml-libxslt-perl
+          #libxml-parser-perl
+          #libxml-simple-perl
+          #libxml-treepp-perl
+          #libxml-twig-perl
+          #libxml-writer-perl
+          #make
+          #perl
+          #perl-tk
+        #if: |
+          #env.OS_RELEASE_ID == 'debian' || env.OS_RELEASE_ID == 'ubuntu'
 
-      - name: Install perl requirements for Redhat systems
-        run: >
-          ${{env.RPM_PKG_MGR}} install -y
-          make
-          perl
-          perl-Archive-Zip
-          perl-CGI
-          perl-Data-Dumper
-          perl-Date-Calc
-          perl-Date-Manip
-          perl-DateTime
-          perl-DateTime-Format-ISO8601
-          perl-DateTime-Format-SQLite
-          perl-DateTime-Format-Strptime
-          perl-DBD-SQLite
-          perl-DBI
-          perl-Digest-SHA
-          perl-ExtUtils-MakeMaker
-          perl-File-chdir
-          perl-File-HomeDir
-          perl-File-Slurp
-          perl-File-Temp
-          perl-File-Which
-          perl-Getopt-Long
-          perl-HTML-Parser
-          perl-HTML-Tree
-          perl-HTTP-Cache-Transparent
-          perl-HTTP-Cookies
-          perl-HTTP-Message
-          perl-IO-stringy
-          perl-JSON
-          perl-JSON-XS
-          perl-libwww-perl
-          perl-Lingua-Preferred
-          perl-List-MoreUtils
-          perl-LWP-Protocol-https
-          perl-LWP-UserAgent-Determined
-          perl-Memoize
-          perl-PerlIO-gzip
-          perl-SOAP-Lite
-          perl-Term-ProgressBar
-          perl-TermReadKey
-          perl-Time-HiRes
-          perl-Time-Local
-          perl-Time-Piece
-          perl-TimeDate
-          perl-Tk
-          perl-Tk-TableMatrix
-          perl-Try-Tiny
-          perl-Unicode-String
-          perl-URI
-          perl-URI-Encode
-          perl-XML-DOM
-          perl-XML-LibXML
-          perl-XML-LibXSLT
-          perl-XML-Parser
-          perl-XML-Simple
-          perl-XML-TreePP
-          perl-XML-Twig
-          perl-XML-Writer
-        if: |
-          env.OS_RELEASE_ID == 'centos' || env.OS_RELEASE_ID == 'fedora'
+      #- name: Install perl requirements for Redhat systems
+        #run: >
+          #${{env.RPM_PKG_MGR}} install -y
+          #make
+          #perl
+          #perl-Archive-Zip
+          #perl-CGI
+          #perl-Data-Dumper
+          #perl-Date-Calc
+          #perl-Date-Manip
+          #perl-DateTime
+          #perl-DateTime-Format-ISO8601
+          #perl-DateTime-Format-SQLite
+          #perl-DateTime-Format-Strptime
+          #perl-DBD-SQLite
+          #perl-DBI
+          #perl-Digest-SHA
+          #perl-ExtUtils-MakeMaker
+          #perl-File-chdir
+          #perl-File-HomeDir
+          #perl-File-Slurp
+          #perl-File-Temp
+          #perl-File-Which
+          #perl-Getopt-Long
+          #perl-HTML-Parser
+          #perl-HTML-Tree
+          #perl-HTTP-Cache-Transparent
+          #perl-HTTP-Cookies
+          #perl-HTTP-Message
+          #perl-IO-stringy
+          #perl-JSON
+          #perl-JSON-XS
+          #perl-libwww-perl
+          #perl-Lingua-Preferred
+          #perl-List-MoreUtils
+          #perl-LWP-Protocol-https
+          #perl-LWP-UserAgent-Determined
+          #perl-Memoize
+          #perl-PerlIO-gzip
+          #perl-SOAP-Lite
+          #perl-Term-ProgressBar
+          #perl-TermReadKey
+          #perl-Time-HiRes
+          #perl-Time-Local
+          #perl-Time-Piece
+          #perl-TimeDate
+          #perl-Tk
+          #perl-Tk-TableMatrix
+          #perl-Try-Tiny
+          #perl-Unicode-String
+          #perl-URI
+          #perl-URI-Encode
+          #perl-XML-DOM
+          #perl-XML-LibXML
+          #perl-XML-LibXSLT
+          #perl-XML-Parser
+          #perl-XML-Simple
+          #perl-XML-TreePP
+          #perl-XML-Twig
+          #perl-XML-Writer
+        #if: |
+          #env.OS_RELEASE_ID == 'centos' || env.OS_RELEASE_ID == 'fedora'
 
-      - name: Checkout
-        uses: actions/checkout@v3
+      #- name: Checkout
+        #uses: actions/checkout@v3
 
-      - name: perl Makefile.PL
-        run: perl Makefile.PL -default NO_PACKLIST=1 NO_PERLLOCAL=1
+      #- name: perl Makefile.PL
+        #run: perl Makefile.PL -default NO_PACKLIST=1 NO_PERLLOCAL=1
 
-      - name: make
-        run: make
+      #- name: make
+        #run: make
 
-      - name: make test
-        run: make test
+      #- name: make test
+        #run: make test
 
 
   windows-build:
@@ -239,63 +239,63 @@ jobs:
         run: echo "PATH=C:\Strawberry\c\bin;C:\Strawberry\perl\site\bin;C:\Strawberry\perl\bin;C:\msys64\mingw64\bin;C:\msys64\usr\bin;$Env:Path" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         shell: powershell
 
-      - name: Install perl requirements
-        run: >
-          cpanm --notest --no-interactive
-          App::PP::Autolink
-          Archive::Zip
-          CGI
-          CGI::Carp
-          Date::Manip
-          DateTime
-          DateTime::Format::ISO8601
-          DateTime::Format::SQLite
-          DBD::SQLite
-          DBI
-          File::HomeDir
-          File::Slurp
-          HTML::FormatText
-          HTTP::Cache::Transparent
-          IO::Scalar
-          JSON
-          Lingua::EN::Numbers::Ordinate
-          Lingua::Preferred
-          List::MoreUtils
-          LWP::Protocol::https
-          LWP::UserAgent::Determined
-          Memoize
-          Module::Install
-          Params::Validate
-          SOAP::Lite
-          Term::ProgressBar
-          Tk
-          Tk::TableMatrix
-          Unicode::String
-          Unicode::UTF8simple
-          URI::Encode
-          XML::DOM
-          XML::LibXML
-          XML::LibXSLT
-          XML::Twig
-          XML::Writer
-          XML::TreePP
+      #- name: Install perl requirements
+        #run: >
+          #cpanm --notest --no-interactive
+          #App::PP::Autolink
+          #Archive::Zip
+          #CGI
+          #CGI::Carp
+          #Date::Manip
+          #DateTime
+          #DateTime::Format::ISO8601
+          #DateTime::Format::SQLite
+          #DBD::SQLite
+          #DBI
+          #File::HomeDir
+          #File::Slurp
+          #HTML::FormatText
+          #HTTP::Cache::Transparent
+          #IO::Scalar
+          #JSON
+          #Lingua::EN::Numbers::Ordinate
+          #Lingua::Preferred
+          #List::MoreUtils
+          #LWP::Protocol::https
+          #LWP::UserAgent::Determined
+          #Memoize
+          #Module::Install
+          #Params::Validate
+          #SOAP::Lite
+          #Term::ProgressBar
+          #Tk
+          #Tk::TableMatrix
+          #Unicode::String
+          #Unicode::UTF8simple
+          #URI::Encode
+          #XML::DOM
+          #XML::LibXML
+          #XML::LibXSLT
+          #XML::Twig
+          #XML::Writer
+          #XML::TreePP
 
-      - name: Download Packer
-        # modify PAR::Packer to print our custom "don't panic" message
-        working-directory: /temp
-        run: |
-          # cpan -g  didn't work, so...
-          wget https://cpan.metacpan.org/authors/id/R/RS/RSCHUPP/PAR-Packer-1.054.tar.gz
-          gzip -d PAR-Packer-1.054.tar.gz
-          tar xf PAR-Packer-1.054.tar
-          cd PAR-Packer-1.054
-          sed -i '/if ( rc == -1 && errno != EEXIST)/i\    if ( rc == 0 ) fprintf(stderr,\"Note: This will take a while on first run\\\n\");' myldr/boot.c
+      #- name: Download Packer
+        ## modify PAR::Packer to print our custom "don't panic" message
+        #working-directory: /temp
+        #run: |
+          ## cpan -g  didn't work, so...
+          #wget https://cpan.metacpan.org/authors/id/R/RS/RSCHUPP/PAR-Packer-1.054.tar.gz
+          #gzip -d PAR-Packer-1.054.tar.gz
+          #tar xf PAR-Packer-1.054.tar
+          #cd PAR-Packer-1.054
+          #sed -i '/if ( rc == -1 && errno != EEXIST)/i\    if ( rc == 0 ) fprintf(stderr,\"Note: This will take a while on first run\\\n\");' myldr/boot.c
 
-      - name: Install Packer
-        working-directory: /temp
-        run: |
-          cd PAR-Packer-1.054
-          cpanm --notest --no-interactive .
+      #- name: Install Packer
+        #working-directory: /temp
+        #run: |
+          #cd PAR-Packer-1.054
+          #cpanm --notest --no-interactive .
 
       - name: Show content of log files on failure
         if: ${{ failure() }}
@@ -350,7 +350,9 @@ jobs:
             $gitcommits = "000$gitcommits"
             $gitcommits = $gitcommits.substring($gitcommits.length-3,3)
           }
+          echo "::set-output name=tag::$gittag"
           echo "::set-output name=release::$gitcommits"
+          echo "::set-output name=hash::$githash"
 
       - name: Check release distance
         run: echo release=${{ steps.vars.outputs.release }}
@@ -358,8 +360,8 @@ jobs:
       - name: Update Version string
         # only if doesn't already contain an alpha
         run: |
-          sed -ri "s/(VERSION = '[0-9\.]*?)('.*?)$/\1_${{ steps.vars.outputs.release }}\2/" Makefile.PL
-          sed -ri "s/(VERSION = '[0-9\.]*?)('.*?)$/\1_${{ steps.vars.outputs.release }}\2/" lib/XMLTV.pm.in 
+          sed -ri "s/(VERSION = ')[0-9\.]*?('.*?)$/\1${{ steps.vars.outputs.tag }}_${{ steps.vars.outputs.release }}\2/" Makefile.PL
+          sed -ri "s/(VERSION = ')[0-9\.]*?('.*?)$/\1${{ steps.vars.outputs.tag }}_${{ steps.vars.outputs.release }}\2/" lib/XMLTV.pm.in 
         if: |
           steps.vars.outputs.release != ''
 
@@ -393,36 +395,36 @@ jobs:
 
 
 
-      - name: perl Makefile.PL
-        run: perl Makefile.PL -default NO_PACKLIST=1 NO_PERLLOCAL=1
+      #- name: perl Makefile.PL
+        #run: perl Makefile.PL -default NO_PACKLIST=1 NO_PERLLOCAL=1
 
-      - name: gmake
-        run: gmake
+      #- name: gmake
+        #run: gmake
 
-      - name: gmake install
-        run: gmake pure_install
-        if: github.event_name == 'push'
+      #- name: gmake install
+        #run: gmake pure_install
+        #if: github.event_name == 'push'
 
-      - name: gmake xmltv.exe
-        run: gmake xmltv.exe
-        if: github.event_name == 'push'
+      #- name: gmake xmltv.exe
+        #run: gmake xmltv.exe
+        #if: github.event_name == 'push'
 
-      - name: Create target artifact directory
-        run: |
-          md "artifacts"
-        if: github.event_name == 'push'
+      #- name: Create target artifact directory
+        #run: |
+          #md "artifacts"
+        #if: github.event_name == 'push'
 
-      - name: Copy xmltv.exe to Artifacts
-        run: copy xmltv.exe artifacts/xmltv.exe
-        if: github.event_name == 'push'
+      #- name: Copy xmltv.exe to Artifacts
+        #run: copy xmltv.exe artifacts/xmltv.exe
+        #if: github.event_name == 'push'
 
-      - name: Publish xmltv.exe Artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: xmltv.exe
-          path: artifacts
-          retention-days: 15
-        if: github.event_name == 'push'
+      #- name: Publish xmltv.exe Artifact
+        #uses: actions/upload-artifact@v2
+        #with:
+          #name: xmltv.exe
+          #path: artifacts
+          #retention-days: 15
+        #if: github.event_name == 'push'
 
       # deprecated - use SCP
       #- name: Check if FTP defined
@@ -706,120 +708,116 @@ jobs:
 
 
 
-  windows-upload:
-    name: Upload Windows build
+  #windows-upload:
+    #name: Upload Windows build
 
-    needs: windows-build
+    #needs: windows-build
 
-    runs-on: ubuntu-latest
+    #runs-on: ubuntu-latest
 
-    env:
-      # Use the same ssh-agent socket across all steps
-      SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+    #env:
+      ## Use the same ssh-agent socket across all steps
+      #SSH_AUTH_SOCK: /tmp/ssh_agent.sock
 
-    steps:
-      - name: Fetch files from windows-build
-        uses: actions/download-artifact@v3
-        with:
-          name: xmltv.exe
-          # artifacts/ now available in this job
+    #steps:
+      #- name: Fetch files from windows-build
+        #uses: actions/download-artifact@v3
+        #with:
+          #name: xmltv.exe
+          ## artifacts/ now available in this job
 
-      - name: Check if SSH defined
-        id: vars
-        run: |
-          echo "::set-output name=ssh_ready::${{ secrets.ALPHA_SSH_HOST != '' }}"
-          echo ssh_ready=${{ steps.vars.outputs.ssh_ready }}
+      #- name: Check if SSH defined
+        #id: vars
+        #run: |
+          #echo "::set-output name=ssh_ready::${{ secrets.ALPHA_SSH_HOST != '' }}"
+          #echo ssh_ready=${{ steps.vars.outputs.ssh_ready }}
 
-      - name: Load SSH
-        run: |
-          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
-          echo 'echo ${{ secrets.ALPHA_SSH_PASSPHRASE }}' > ~/.ssh_askpass && chmod +x ~/.ssh_askpass
-          echo "${{ secrets.ALPHA_SSH_PRIVATE_KEY }}" | tr -d '\r' | DISPLAY=None SSH_ASKPASS=~/.ssh_askpass ssh-add - >/dev/null
-          rm -f ~/.ssh_askpass
-        if: |
-          github.event_name == 'push'
-          && steps.vars.outputs.ssh_ready == 'true'
+      #- name: Load SSH
+        #run: |
+          #ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+          #echo 'echo ${{ secrets.ALPHA_SSH_PASSPHRASE }}' > ~/.ssh_askpass && chmod +x ~/.ssh_askpass
+          #echo "${{ secrets.ALPHA_SSH_PRIVATE_KEY }}" | tr -d '\r' | DISPLAY=None SSH_ASKPASS=~/.ssh_askpass ssh-add - >/dev/null
+          #rm -f ~/.ssh_askpass
+        #if: |
+          #github.event_name == 'push'
+          #&& steps.vars.outputs.ssh_ready == 'true'
 
-      - name: Check SSH
-        run: |
-          ssh-add -l
-        if: |
-          github.event_name == 'push'
-          && steps.vars.outputs.ssh_ready == 'true'
+      #- name: Check SSH
+        #run: |
+          #ssh-add -l
+        #if: |
+          #github.event_name == 'push'
+          #&& steps.vars.outputs.ssh_ready == 'true'
 
-      - name: Upload files
-        run: |
-          scp -o StrictHostKeyChecking=no -P ${{ secrets.ALPHA_SSH_PORT }} xmltv.exe ${{ secrets.ALPHA_SSH_USER }}@${{ secrets.ALPHA_SSH_HOST }}:${{ secrets.ALPHA_SSH_REMOTE_DIR }}
-        if: |
-          github.event_name == 'push'
-          && steps.vars.outputs.ssh_ready == 'true'
-
-
+      #- name: Upload files
+        #run: |
+          #scp -o StrictHostKeyChecking=no -P ${{ secrets.ALPHA_SSH_PORT }} xmltv.exe ${{ secrets.ALPHA_SSH_USER }}@${{ secrets.ALPHA_SSH_HOST }}:${{ secrets.ALPHA_SSH_REMOTE_DIR }}
+        #if: |
+          #github.event_name == 'push'
+          #&& steps.vars.outputs.ssh_ready == 'true'
 
 
+  #macos-build:
+    #name: Build on macOS
 
+    #runs-on: macos-latest
 
-  macos-build:
-    name: Build on macOS
+    #strategy:
+      #fail-fast: false
 
-    runs-on: macos-latest
+    #steps:
+      #- name: Install cpanm
+        #run: |
+          #brew install cpanminus
+      #- name: Install perl requirements
+        #run: >
+          #cpanm --notest --no-interactive
+          #Archive::Zip
+          #CGI
+          #CGI::Carp
+          #Date::Manip
+          #DateTime DateTime::Format::ISO8601
+          #DateTime::Format::SQLite
+          #DBD::SQLite
+          #DBI
+          #File::HomeDir
+          #File::Slurp
+          #HTML::FormatText
+          #HTTP::Cache::Transparent
+          #IO::Scalar
+          #JSON
+          #Lingua::EN::Numbers::Ordinate
+          #Lingua::Preferred
+          #List::MoreUtils
+          #LWP::Protocol::https
+          #LWP::UserAgent::Determined
+          #Memoize
+          #SOAP::Lite
+          #Term::ProgressBar
+          #Tk
+          #Tk::TableMatrix
+          #Unicode::String
+          #Unicode::UTF8simple
+          #URI::Encode
+          #XML::DOM
+          #XML::LibXML
+          #XML::LibXSLT
+          #XML::Twig
+          #XML::Writer XML::TreePP
 
-    strategy:
-      fail-fast: false
+      #- name: Show content of log files on failure
+        #if: ${{ failure() }}
+        #run: cat /Users/runner/.cpanm/work/*/build.log
 
-    steps:
-      - name: Install cpanm
-        run: |
-          brew install cpanminus
-      - name: Install perl requirements
-        run: >
-          cpanm --notest --no-interactive
-          Archive::Zip
-          CGI
-          CGI::Carp
-          Date::Manip
-          DateTime DateTime::Format::ISO8601
-          DateTime::Format::SQLite
-          DBD::SQLite
-          DBI
-          File::HomeDir
-          File::Slurp
-          HTML::FormatText
-          HTTP::Cache::Transparent
-          IO::Scalar
-          JSON
-          Lingua::EN::Numbers::Ordinate
-          Lingua::Preferred
-          List::MoreUtils
-          LWP::Protocol::https
-          LWP::UserAgent::Determined
-          Memoize
-          SOAP::Lite
-          Term::ProgressBar
-          Tk
-          Tk::TableMatrix
-          Unicode::String
-          Unicode::UTF8simple
-          URI::Encode
-          XML::DOM
-          XML::LibXML
-          XML::LibXSLT
-          XML::Twig
-          XML::Writer XML::TreePP
+      #- name: Checkout
+        #uses: actions/checkout@v3
 
-      - name: Show content of log files on failure
-        if: ${{ failure() }}
-        run: cat /Users/runner/.cpanm/work/*/build.log
+      #- name: perl Makefile.PL
+        #run: perl Makefile.PL -default NO_PACKLIST=1 NO_PERLLOCAL=1
 
-      - name: Checkout
-        uses: actions/checkout@v3
+      #- name: make
+        #run: make
 
-      - name: perl Makefile.PL
-        run: perl Makefile.PL -default NO_PACKLIST=1 NO_PERLLOCAL=1
-
-      - name: make
-        run: make
-
-      - name: make test
-        run: make test
+      #- name: make test
+        #run: make test
 
