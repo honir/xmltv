@@ -74,7 +74,7 @@ my $generator_info_url	= $GRABBER_URL;
 my $source_info_name	= $SOURCE_NAME;
 my $source_info_url		= $SOURCE_URL;
 #
-my $grabberid = '2023-01-28.0856';
+my $grabberid = '2023-01-28.0859';
 
 # ------------------------------------------------------------------------------------------------------------------------------------- #
 # Use XMLTV::Options::ParseOptions to parse the options and take care of the basic capabilities that a tv_grabber should have
@@ -1233,6 +1233,7 @@ sub makeignorelist ($) {
 		my $fn = ($opt->{makeignorelist} || 'method2ignorelist');
 		debug "Writing $fn";
 		open my $fh, '>', $fn or die "Can't open file $!";
+		print $fh '# LIST OF IGNORED CHANNELS'."\n";
 		print $fh '# These channels contain no data, so it is safe to '."\n";
 		print $fh '#  remove them from the configuration file.'.$_."\n";
 		foreach (@$skipchannels) {
