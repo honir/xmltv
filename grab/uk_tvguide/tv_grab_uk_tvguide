@@ -74,7 +74,7 @@ my $generator_info_url	= $GRABBER_URL;
 my $source_info_name	= $SOURCE_NAME;
 my $source_info_url		= $SOURCE_URL;
 #
-my $grabberid = '2023-01-28.0854';
+my $grabberid = '2023-01-28.0856';
 
 # ------------------------------------------------------------------------------------------------------------------------------------- #
 # Use XMLTV::Options::ParseOptions to parse the options and take care of the basic capabilities that a tv_grabber should have
@@ -1260,7 +1260,7 @@ sub useignorelist ($) {
 
 		while (my $r = <$fh>) {
 			chomp $r;
-			next if $r =~ /\s*#/;
+			next if $r =~ /^\s*#/;
 			(my $id) = $r =~ /^channel=(\d+)$/;
 			next if !$id;
 			# remove from channellist
