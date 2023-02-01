@@ -74,7 +74,7 @@ my $generator_info_url	= $GRABBER_URL;
 my $source_info_name	= $SOURCE_NAME;
 my $source_info_url		= $SOURCE_URL;
 #
-my $grabberid = '2023-01-28.0859';
+my $grabberid = '2023-02-01.1557';
 
 # ------------------------------------------------------------------------------------------------------------------------------------- #
 # Use XMLTV::Options::ParseOptions to parse the options and take care of the basic capabilities that a tv_grabber should have
@@ -1189,7 +1189,6 @@ sub makeignorelist ($) {
 
 		warning "Creating the check list will take about an hour.\n You don't need to do this every time - unless your check list \n is very out-of-date you can simply use your existing check list. \n (Ctrl+C to abort)";
 
-
 		my $bar = new XMLTV::ProgressBar({
 			name => "Checking channels",
 			count => (scalar keys %$channels)
@@ -1230,7 +1229,7 @@ sub makeignorelist ($) {
 
 
 		# write the ignore list
-		my $fn = ($opt->{makeignorelist} || 'method2ignorelist');
+		my $fn = ($opt->{makeignorelist} || 'uktvguideignorelist');
 		debug "Writing $fn";
 		open my $fh, '>', $fn or die "Can't open file $!";
 		print $fh '# LIST OF IGNORED CHANNELS'."\n";
@@ -1255,7 +1254,7 @@ sub useignorelist ($) {
 		warning "Removing ignored channels";
 
 		# read the ignore list
-		my $fn = ($opt->{useignorelist} || 'method2ignorelist');
+		my $fn = ($opt->{useignorelist} || 'uktvguideignorelist');
 		debug "Reading $fn";
 		open my $fh, '<', $fn or die "Can't open file $!";
 
@@ -1272,7 +1271,6 @@ sub useignorelist ($) {
 
 	}
 
-	#debug "Remain ".(scalar keys %$channels)." channels \n";
 }
 
 
