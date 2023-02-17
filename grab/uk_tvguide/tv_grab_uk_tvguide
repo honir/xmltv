@@ -74,7 +74,7 @@ my $generator_info_url	= $GRABBER_URL;
 my $source_info_name	= $SOURCE_NAME;
 my $source_info_url		= $SOURCE_URL;
 #
-my $grabberid = '2023-02-01.1619';
+my $grabberid = '2023-02-17.1104';
 
 # ------------------------------------------------------------------------------------------------------------------------------------- #
 # Use XMLTV::Options::ParseOptions to parse the options and take care of the basic capabilities that a tv_grabber should have
@@ -833,16 +833,22 @@ sub fetch_channels {
 
 	my $channels = {};
 
-	if ( (!defined $opt->{makeignorelist}) && (!defined $opt->{useignorelist}) ) {
-		# Force the use of the ignorelist. Otherwise the --configure stage of this grabber is pretty near impossible
-		#  (due to all the defunct channels with no data).
-		# Even the 'original' fetch method (using the site's now broken "select" list) found nearly 450 defunct channels.
-		# Only "alt method 2" i it not really necessary as that method actually finds fewer channels than the other methods.
 
-		$opt->{makeignorelist} = $opt->{useignorelist} = '';
-
-		warning "\n ******************************************************* \n It is recommended you run with the --makeignorelist or --useignorelist options. \n Otherwise you will get 100s of channels in your list which actually contain no programme schedule. \n (This is a problem with the TVGuide website.) \n \n These options have been activated for you. This means the --configure stage \n might take over an hour, but in future you can use just \n the --useignorelist option to avoid this delay. \n ******************************************************* \n ";
-	}
+	#######################################################################################################################
+	#
+	# 2023-02-17 No don't do this - see https://github.com/XMLTV/xmltv/issues/196#issuecomment-1430163497
+	#
+	#if ( (!defined $opt->{makeignorelist}) && (!defined $opt->{useignorelist}) ) {
+	#	# Force the use of the ignorelist. Otherwise the --configure stage of this grabber is pretty near impossible
+	#	#  (due to all the defunct channels with no data).
+	#	# Even the 'original' fetch method (using the site's now broken "select" list) found nearly 450 defunct channels.
+	#	# Only "alt method 2" is it not really necessary as that method actually finds fewer channels than the other methods.
+	#
+	#	$opt->{makeignorelist} = $opt->{useignorelist} = '';
+	#
+	#	warning "\n ******************************************************* \n It is recommended you run with the --makeignorelist or --useignorelist options. \n Otherwise you will get 100s of channels in your list which actually contain no programme schedule. \n (This is a problem with the TVGuide website.) \n \n These options have been activated for you. This means the --configure stage \n might take over an hour, but in future you can use just \n the --useignorelist option to avoid this delay. \n ******************************************************* \n ";
+	#}
+	#######################################################################################################################
 
 
 
