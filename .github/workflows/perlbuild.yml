@@ -156,14 +156,14 @@ jobs:
         run: gmake pure_install
 
       - name: gmake xmltv.exe
-        run: gmake xmltv32.exe
+        run: gmake xmltv.exe
 
       - name: Create target artifact directory
         run: |
           md "artifacts"
 
       - name: Copy xmltv.exe to Artifacts
-        run: copy xmltv32.exe artifacts/xmltv32.exe
+        run: copy xmltv.exe artifacts/xmltv32.exe
 
       - name: Publish xmltv.exe Artifact
         uses: actions/upload-artifact@v3
