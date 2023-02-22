@@ -163,7 +163,7 @@ jobs:
           md "artifacts"
 
       - name: Copy xmltv.exe to Artifacts
-        run: copy xmltv.exe artifacts/xmltv32.exe
+        run: copy xmltv32.exe artifacts/xmltv32.exe
 
       - name: Publish xmltv.exe Artifact
         uses: actions/upload-artifact@v3
