@@ -1,0 +1,27 @@
+---
+name: exe build
+
+on:
+
+# manual trigger =
+   workflow_dispatch:
+
+jobs:
+  
+  windows-build:
+    name: Build on Windows
+
+    runs-on: windows-latest
+
+    strategy:
+      fail-fast: false
+
+    steps:
+    
+    - name: Install Strawberry Perl W32 Portable
+      run: |
+        wget https://strawberryperl.com/download/5.32.1.1/strawberry-perl-no64-5.32.1.1-32bit-portable.zip
+        unzip strawberry-perl-no64-5.32.1.1-32bit-portable.zip
+        dir
+        
+        
