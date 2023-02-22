@@ -1,3 +1,19 @@
+1.2.0  2023-02-19
+
+  - tv_grab_tr:          disable grabber
+
+  * tv_grab_fi:          improvements to handle upstream changes
+  * tv_grab_fr:          improvements to channel name handling and
+                         updates for upstream changes
+  * tv_grab_na_dd:       add some debug info
+  * tv_grab_uk_tvguide:  bug fixes and improvements
+  * tv_grab_zz_sdjson:   support Schedules Direct redirection response
+  * tv_grab_zz_sdjson_sqlite:
+                         improve rating agency data validation and update
+                         documentation
+
+  * tv_merge:            minor change to output handling
+
 1.1.2  2022-04-18
 
   * tv_grab_fi_sv:       refresh internal channel map
@@ -38,21 +54,21 @@
 
 1.0.0  2021-02-07
 
-  - tv_grab_ch_search:   re-enable fixed grabber
-  - tv_grab_eu_xmltvse:  fetch listings over SSL
-  - tv_grab_fi:          many improvements to listings parsers
-  - tv_grab_na_dtv:      fetch listings over SSL
-  - tv_grab_pt_vodafone: more reliable SSL conections using recent
+  + tv_grab_ch_search:   re-enable fixed grabber
+  * tv_grab_eu_xmltvse:  fetch listings over SSL
+  * tv_grab_fi:          many improvements to listings parsers
+  * tv_grab_na_dtv:      fetch listings over SSL
+  * tv_grab_pt_vodafone: more reliable SSL conections using recent
                          OpenSSL versions
-  - tv_grab_uk_tvguide:  improvements to XMLTV ID compliance
+  * tv_grab_uk_tvguide:  improvements to XMLTV ID compliance
 
   - tv_grab_dk_dr:       disable grabber (source site gone)
   - tv_grab_uk_bleb:     disable grabber (source site gone)
 
-  - tv_grep:             allow regex filtering on channel ID
-  - tv_imdb:             significant reductions in memory consumption
+  * tv_grep:             allow regex filtering on channel ID
+  * tv_imdb:             significant reductions in memory consumption
 
-  - Windows build:       migrate to PAR::Packer
+  * Windows build:       migrate to PAR::Packer
 
 0.6.3  2020-08-22
 

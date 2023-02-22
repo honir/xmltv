@@ -13,6 +13,7 @@ use warnings;
 use base qw(Exporter);
 
 our @EXPORT      = qw(message debug fetchRaw fetchTree
+		      cloneUserAgentHeaders restoreUserAgentHeaders
 		      timeToEpoch fullTimeToEpoch);
 our @EXPORT_OK   = qw(setQuiet setDebug setTimeZone);
 our %EXPORT_TAGS = (
@@ -22,7 +23,6 @@ our %EXPORT_TAGS = (
 # Perl core modules
 use Carp;
 use Encode qw(decode);
-use POSIX qw(tzset);
 use Time::Local qw(timelocal);
 
 # Other modules
@@ -139,6 +139,23 @@ sub fetchTree($;$$$) {
   return($tree);
 }
 
+# get_nice() user agent default headers handling
+sub cloneUserAgentHeaders() {
+  # fetch current HTTP::Headers object
+  my $headers = $XMLTV::Get_nice::ua->default_headers();
+
+  # clone it and use the clone in the user agent
+  my $clone = $headers->clone();
+  $XMLTV::Get_nice::ua->default_headers($clone);
+
+  return($headers, $clone);
+}
+
+sub restoreUserAgentHeaders($) {
+  my($headers) = @_;
+  $XMLTV::Get_nice::ua->default_headers($headers);
+}
+
 #
 # Time zone handling
 #
@@ -159,8 +176,11 @@ sub fetchTree($;$$$) {
 #
 # Test program:
 # ---------------------- CUT HERE ---------------------------------------------
+# use 5.008009;
+# use strict;
+# use warnings;
 # use Time::Local;
-# use POSIX qw(strftime tzset);
+# use POSIX qw(strftime);
 #
 # # DST test days for Europe 2010
 # my @testdays = (
@@ -179,7 +199,6 @@ sub fetchTree($;$$$) {
 # print strftime("System time zone is: %Z\n", localtime(time()));
 # if (@ARGV) {
 #   $ENV{TZ} = "Europe/Helsinki";
-#   tzset();
 # }
 # print strftime("Script time zone is: %Z\n", localtime(time()));
 #
@@ -242,7 +261,6 @@ sub fetchTree($;$$$) {
 # Setup fixed time zone for program start time interpretation
 sub setTimeZone() {
   $ENV{TZ} = "Europe/Helsinki";
-  tzset();
 }
 
 # Take a fi::day (day/month/year) and the program start time (hour/minute)
