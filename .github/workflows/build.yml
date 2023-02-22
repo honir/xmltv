@@ -9,9 +9,10 @@ on:
 #      - master
 
 #  schedule:
-#    - cron: "50 12 * * *"
-    
-  workflow_dispatch:
+#    - cron: "0 0 * * 0"
+
+# manual trigger =
+   workflow_dispatch:
 
 jobs:
   linux-build:
@@ -387,6 +388,31 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+
+
+## THIS ONE USES COMMIT ID
+
+      #- name: Get commit id
+        #id: vars
+        #run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+
+      #- name: Check commit id
+        #run: echo sha_short=${{ steps.vars.outputs.sha_short }}
+
+      #- name: Update Build string
+        #run: |
+          #sed -ri "s/(BUILD = ').*?('.*?)$/\1${{ steps.vars.outputs.sha_short }}\2/" Makefile.PL
+          #sed -ri "s/(BUILD = ').*?('.*?)$/\1${{ steps.vars.outputs.sha_short }}\2/" lib/XMLTV.pm.in 
+
+      #- name: Check Build string
+        #run: |
+          #grep 'BUILD =' Makefile.PL
+          #grep 'BUILD =' lib/XMLTV.pm.in
+
+
+
+## THIS ONE USES GIT DESCRIBE (TAG)
+
       - name: Checkout tags
         # need to avoid a shallow clone for git describe to work
         run: git fetch --prune --unshallow --tags
@@ -429,6 +455,29 @@ jobs:
           grep 'VERSION =' lib/XMLTV.pm.in
         if: |
           steps.vars.outputs.release != ''
+
+
+
+
+   # something like this for bash
+      #- name: Update version string
+        #id: vars
+        #run: |
+          #gitid = $(git describe HEAD)
+          #r = '^v(\d*(?:\.\d*){0,2})-(\d*)-g(.*)$'
+          #if [[ $gitid =~ $r ]]; then
+            #gitv = ${BASH_REMATCH[1]}
+            #gitd = ${BASH_REMATCH[2]}
+            #gitg = ${BASH_REMATCH[3]}
+          #fi
+          #echo $gitd
+          #echo "::set-output name=release::$gitd"
+          #echo $gitv
+          #echo $gitd
+          #echo $gitg
+          
+
+
 
       - name: perl Makefile.PL
         run: perl Makefile.PL -default NO_PACKLIST=1 NO_PERLLOCAL=1
@@ -484,12 +533,271 @@ jobs:
       #    && steps.vars2.outputs.ftp_ready == 'true'
 
 
+
+
+
+
+      # no good as you have to expose the ssh key on commandline (Set-SCPFile)
+      #- name: test scp
+        #shell: powershell
+        #run: |
+          #echo ${env:PATH}
+          #Install-Module -Name Posh-SSH  -Scope CurrentUser -Force
+          #Get-Command -Module Posh-SSH
+          ##Set-SCPFile .....
+
+
+      # Error loading key "(stdin)": invalid format
+      #- name: test scp
+        #shell: powershell
+        ##shell: pwsh
+        ##env:
+          ##SSH_AUTH_SOCKX: ssh_agent.sock
+        #run: |
+          #which ssh-add
+          #which ssh-agent
+          ##md "/tmp"
+          ###ssh-agent is disabled by default
+          ###Get-Service ssh-agent | Select StartType
+          ## Enable ssh-agent
+          #Get-Service -Name ssh-agent | Set-Service -StartupType Manual
+          #echo "Starting agent"
+          ##Start-Service ssh-agent -a ${env:SSH_AUTH_SOCK}
+          ##ssh-agent -a ${env:SSH_AUTH_SOCK}
+          ##ssh-agent
+          #Get-Service ssh-agent
+          #echo "Adding key to agent"
+          #echo "${{ secrets.ALPHA_SSH_PRIVATE_KEY }}" | ssh-add -
+          #ssh-add -l
+          #echo "Running SCP"
+          #scp -o StrictHostKeyChecking=no -P ${{ secrets.ALPHA_SSH_PORT }} README.md root@185.158.250.150:/temp
+          ##scp -o StrictHostKeyChecking=no -P 1000 README.md root@185.158.250.150:/temp
+
+
+      # Error on file permissions too lax
+      #- name: test scp
+        #run: |
+          #md "/tmp"#
+          ###ssh-agent is disabled by default
+          ###Get-Service ssh-agent | Select StartType
+          ## Enable ssh-agent
+          #Get-Service -Name ssh-agent | Set-Service -StartupType Manual
+          ##Start-Service ssh-agent -a ${env:SSH_AUTH_SOCK}
+          ##ssh-agent -a ${env:SSH_AUTH_SOCK}
+          #echo "Starting agent"
+          #ssh-agent
+          #Get-Service ssh-agent
+          #echo "Adding key to agent"
+          #echo "${{ secrets.ALPHA_SSH_PRIVATE_KEY }}" > /tmp/xcxcxc
+          #chmod 600 /tmp/xcxcxc        <<<< not Windows!
+          #ssh-add /tmp/xcxcxc
+          #ssh-add -l
+          #echo "Running SCP"
+          #scp -o StrictHostKeyChecking=no -P ${{ secrets.ALPHA_SSH_PORT }} README.md root@185.158.250.150:/temp
+          ##scp -o StrictHostKeyChecking=no -P 1000 README.md root@185.158.250.150:/temp
+          #mkdir ~/.ssh/
+
+
+      # couldn't decrypt password-protected key? (I didn't try without passphrase)
+      #- name: Copy folder content recursively to remote
+        #uses: garygrossgarten/github-action-scp@release
+        #with:
+          #local: README.md
+          #remote: /temp
+          #host: 185.158.250.150
+          #port: ${{ secrets.ALPHA_SSH_PORT }}
+          #username: root
+          #privateKey: ${{ secrets.ALPHA_SSH_PRIVATE_KEY}}
+
+
+
+
+      #- name: Make test file
+        #run: echo "jrjg rjg jknrgjnrg jnrg jjrg jreg" >test.txt
+
+      #- name: Store test file for job 2
+        #uses: actions/upload-artifact@v3
+        #with:
+          #name: testy
+          #path: test.txt
+          #retention-days: 1
+
+
+
+
+  #windows-upload-test1:
+    #runs-on: ubuntu-latest
+
+    #steps:
+      # works but needs rsync config on server
+      #- name: test rsync
+        #env:
+          ##remote_host: ${{ secrets.DEPLOY_HOST }}
+          ##remote_port: ${{ secrets.DEPLOY_PORT }}
+          ##remote_user: ${{ secrets.DEPLOY_USER }}
+          ##remote_key: ${{ secrets.DEPLOY_KEY }}
+          ##local_dir: "public/"
+          ##remote_dir: ""
+          #remote_host: 185.158.250.150
+          #remote_port: ${{ secrets.ALPHA_SSH_PORT }}
+          #remote_user: root
+          #remote_key: ${{ secrets.ALPHA_SSH_PRIVATE_KEY }}
+          #local_dir: "public/"
+          #remote_dir: ""
+        #run: |
+          #mkdir public
+          #echo "jrjg rjg jknrgjnrg jnrg jjrg jreg" >public/test.txt
+          #mkdir ~/.ssh
+          #echo "$remote_key" > ~/.ssh/gh_actions_key
+          #chmod 600 ~/.ssh/gh_actions_key
+          #rsync -avzr -e "ssh -p ${remote_port} -i ~/.ssh/gh_actions_key -o StrictHostKeyChecking=no" ${local_dir} ${remote_user}@${remote_host}:${remote_dir}
+
+
+
+  #windows-upload-test:
+    #name: Upload Windows build
+
+    #needs: windows-build
+
+    #runs-on: ubuntu-latest
+
+    #env:
+      ## Use the same ssh-agent socket across all steps
+      #SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+
+    #steps:
+      #- name: Fetch test file from job 1
+        #uses: actions/download-artifact@v3
+        #with:
+          #name: testy
+          ## test.txt now available in this job
+
+      ## works (needs tidying) but uses a file - see ssh_agent version below
+      ##- name: test scp
+        ##env:
+          ###remote_host: ${{ secrets.DEPLOY_HOST }}
+          ###remote_port: ${{ secrets.DEPLOY_PORT }}
+          ###remote_user: ${{ secrets.DEPLOY_USER }}
+          ###remote_key: ${{ secrets.DEPLOY_KEY }}
+          ###local_dir: "public/"
+          ###remote_dir: ""
+          ##remote_host: 185.158.250.150
+          ##remote_port: ${{ secrets.ALPHA_SSH_PORT }}
+          ##remote_user: root
+          ##remote_key: ${{ secrets.ALPHA_SSH_PRIVATE_KEY }}
+          ##local_dir: "public/"
+          ##remote_dir: ""
+        ##run: |
+          ##mkdir public
+          ##echo "jrjg rjg jknrgjnrg jnrg jjrg jreg" >public/test.txt
+          ##mkdir ~/.ssh
+          ##echo "${{ secrets.ALPHA_SSH_PRIVATE_KEY }}" > ~/.ssh/gh_actions_key
+          ##chmod 600 ~/.ssh/gh_actions_key
+          ##scp -o StrictHostKeyChecking=no -i ~/.ssh/gh_actions_key -P ${{ secrets.ALPHA_SSH_PORT }} public/test.txt root@185.158.250.150:/temp
+
+
+      ## works (needs tidying)
+      ##- name: test scp
+        ##env:
+          ###remote_host: ${{ secrets.DEPLOY_HOST }}
+          ###remote_port: ${{ secrets.DEPLOY_PORT }}
+          ###remote_user: ${{ secrets.DEPLOY_USER }}
+          ###remote_key: ${{ secrets.DEPLOY_KEY }}
+          ###local_dir: "public/"
+          ###remote_dir: ""
+          ##remote_host: 185.158.250.150
+          ##remote_port: ${{ secrets.ALPHA_SSH_PORT }}
+          ##remote_user: root
+          ##remote_key: ${{ secrets.ALPHA_SSH_PRIVATE_KEY }}
+          ##local_dir: "public/"
+          ##remote_dir: ""
+        ##run: |
+          ##mkdir public
+          ##echo "jrjg rjg jknrgjnrg jnrg jjrg jreg" >public/test.txt
+          ###
+          ##eval `ssh-agent -s`
+          ##ssh-add - <<< "${{ secrets.ALPHA_SSH_PRIVATE_KEY }}"
+          ##ssh-add -l
+          ##scp -o StrictHostKeyChecking=no -P ${{ secrets.ALPHA_SSH_PORT }} public/test.txt root@185.158.250.150:/temp
+
+      ## works - makes its own test file
+      ##- name: test scp
+        ##env:
+          ### explicit socket to avoid need for eval on ssh-agent
+          ##SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+          ##local_dir: "public/"
+        ##run: |
+          ##mkdir public
+          ##echo "jrjg rjg jknrgjnrg jnrg jjrg jreg" >public/test.txt
+          ###
+          ##ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+          ##ssh-add - <<< "${{ secrets.ALPHA_SSH_PRIVATE_KEY }}"
+          ##ssh-add -l
+          ##scp -o StrictHostKeyChecking=no -P ${{ secrets.ALPHA_SSH_PORT }} public/test.txt ${{ secrets.ALPHA_SSH_USER }}@${{ secrets.ALPHA_SSH_HOST }}:${{ secrets.ALPHA_SSH_REMOTE_DIR }}
+
+
+      ## works - now superseded
+      ##- name: test scp
+        ##env:
+          ### explicit socket to avoid need for eval on ssh-agent
+          ##SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+          ##local_dir: "public/"
+        ##run: |
+          ####mkdir public
+          ####echo "jrjg rjg jknrgjnrg jnrg jjrg jreg" >public/test.txt
+          ###
+          ##ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+          ##ssh-add - <<< "${{ secrets.ALPHA_SSH_PRIVATE_KEY }}"
+          ##ssh-add -l
+          ##scp -o StrictHostKeyChecking=no -P ${{ secrets.ALPHA_SSH_PORT }} test.txt ${{ secrets.ALPHA_SSH_USER }}@${{ secrets.ALPHA_SSH_HOST }}:${{ secrets.ALPHA_SSH_REMOTE_DIR }}
+
+
+      ## https://stackoverflow.com/questions/64953274/how-to-send-passphrase-for-ssh-add-with-github-actions
+
+
+      #- name: Check if SSH defined
+        #id: vars
+        #run: |
+          #echo "::set-output name=ssh_ready::${{ secrets.ALPHA_SSH_HOST != '' }}"
+          #echo ssh_ready=${{ steps.vars.outputs.ssh_ready }}
+
+      #- name: Load SSH
+        #run: |
+          #ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+          #echo 'echo ${{ secrets.ALPHA_SSH_PASSPHRASE }}' > ~/.ssh_askpass && chmod +x ~/.ssh_askpass
+          #ls -lah ~
+          #echo "${{ secrets.ALPHA_SSH_PRIVATE_KEY }}" | tr -d '\r' | DISPLAY=None SSH_ASKPASS=~/.ssh_askpass ssh-add - >/dev/null
+          #rm -f ~/.ssh_askpass
+          ##
+          #ssh-add -l
+          #ls -lah ~
+        #if: |
+          #github.event_name == 'push'
+          #&& steps.vars.outputs.ssh_ready == 'true'
+
+      #- name: Check SSH
+        #run: |
+          #ssh-add -l
+        #if: |
+          #github.event_name == 'push'
+          #&& steps.vars.outputs.ssh_ready == 'true'
+
+      #- name: Upload files
+        #run: |
+          #scp -o StrictHostKeyChecking=no -P ${{ secrets.ALPHA_SSH_PORT }} test.txt ${{ secrets.ALPHA_SSH_USER }}@${{ secrets.ALPHA_SSH_HOST }}:${{ secrets.ALPHA_SSH_REMOTE_DIR }}
+        #if: |
+          #github.event_name == 'push'
+          #&& steps.vars.outputs.ssh_ready == 'true'
+
+
+
+
   windows-upload:
     name: Upload Windows build
 
     needs: windows-build
 
-    if: github.event_name == 'push'
+#    if: github.event_name == 'push'
 
     runs-on: ubuntu-latest
 
@@ -519,17 +827,23 @@ jobs:
           echo 'echo ${{ secrets.ALPHA_SSH_PASSPHRASE }}' > ~/.ssh_askpass && chmod +x ~/.ssh_askpass
           echo "${{ secrets.ALPHA_SSH_PRIVATE_KEY }}" | tr -d '\r' | DISPLAY=None SSH_ASKPASS=~/.ssh_askpass ssh-add - >/dev/null
           rm -f ~/.ssh_askpass
-        if: steps.vars.outputs.ssh_ready == 'true'
+        if: |
+          github.event_name == 'push'
+          && steps.vars.outputs.ssh_ready == 'true'
 
       - name: Check SSH identity
         run: |
           ssh-add -l
-        if: steps.vars.outputs.ssh_ready == 'true'
+        if: |
+          github.event_name == 'push'
+          && steps.vars.outputs.ssh_ready == 'true'
 
       - name: Upload files
         run: |
           scp -o StrictHostKeyChecking=no -o HostKeyAlgorithms=+ssh-rsa -P ${{ secrets.ALPHA_SSH_PORT }} xmltv.exe ${{ secrets.ALPHA_SSH_USER }}@${{ secrets.ALPHA_SSH_HOST }}:${{ secrets.ALPHA_SSH_REMOTE_DIR }}
-        if: steps.vars.outputs.ssh_ready == 'true'
+        if: |
+          github.event_name == 'push'
+          && steps.vars.outputs.ssh_ready == 'true'
 
 
   macos-build:
@@ -597,4 +911,3 @@ jobs:
 
       - name: make test
         run: make test
-
