@@ -171,9 +171,9 @@ my $channels =
         'id' => 'tlc.yle.fi',
         'display-name' => [[ 'TLC', $LANGUAGE_CODE ]]
     },
-    'fox.yle.fi' => {
-        'id' => 'fox.yle.fi',
-        'display-name' => [[ 'FOX', $LANGUAGE_CODE ]]
+    'star.yle.fi' => {
+        'id' => 'star.yle.fi',
+        'display-name' => [[ 'STAR', $LANGUAGE_CODE ]]
     },
     'ava.yle.fi' => {
         'id' => 'ava.yle.fi',
@@ -182,10 +182,6 @@ my $channels =
     'hero.yle.fi' => {
         'id' => 'hero.yle.fi',
         'display-name' => [[ 'HERO', $LANGUAGE_CODE ]]
-    },
-    'alfatv.yle.fi' => {
-        'id' => 'alfatv.yle.fi',
-        'display-name' => [[ 'ALFATV', $LANGUAGE_CODE ]]
     },
     'frii.yle.fi' => {
         'id' => 'frii.yle.fi',
@@ -217,10 +213,9 @@ my $channel_id_map =
     'jim' => 'jim.yle.fi',
     'kutonen' => 'kutonen.yle.fi',
     'tlc' => 'tlc.yle.fi',
-    'fox' => 'fox.yle.fi',
+    'star-channel' => 'star.yle.fi',
     'ava' => 'ava.yle.fi',
     'hero' => 'hero.yle.fi',
-    'alfatv' => 'alfatv.yle.fi',
     'frii' => 'frii.yle.fi',
     'national-geographic' => 'natgeo.yle.fi',
     'tv-finland' => 'tvfinland.yle.fi',
@@ -412,6 +407,8 @@ sub write_listings_data
     my $previous_programmes = {};
 
     say(scalar @channels ." configured channels")  if !$opt->{quiet};
+
+    $XMLTV::Get_nice::ua->default_header('Accept-Language' => "$LANGUAGE_CODE");
 
     my $dt_today = DateTime->today( time_zone => $TIMEZONE );
     say("     Today: " . $dt_today->strftime( '%Y-%m-%dT%H:%M:%S %z')) if $opt->{debug};
@@ -659,6 +656,7 @@ sub write_listings_data
 
                 $t_prog_link = $t_prog->look_down('_tag' => 'a', 'class' => 'schedule-card__link');
                 $p_url = $DATA_SITE_ROOT . $t_prog_link->attr('href') if $t_prog_link;
+                $p_url =~ s/(?<!:)\/\//\// if $p_url;
 
                 # Create the data structure for the program.
                 my $programme =
