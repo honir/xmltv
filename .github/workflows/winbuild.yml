@@ -35,8 +35,7 @@ jobs:
         shell: powershell
         
       - name: Print perl version
-        run: | perl -v
-        echo $env:GITHUB_ENV
+        run: perl -v
 
       - name: Install perl requirements
         run: >
