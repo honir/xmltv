@@ -166,7 +166,7 @@ jobs:
 #        if: github.event_name == 'push'
 
       - name: gmake xmltv.exe
-        run: gmake xmltv.exe
+        run: gmake ${{ env.exefile }}
 #        if: github.event_name == 'push'
 
       - name: Create target artifact directory
@@ -174,7 +174,7 @@ jobs:
 #        if: github.event_name == 'push'
 
       - name: Copy xmltv.exe to Artifacts
-        run: copy xmltv.exe artifacts/${{ env.exefile }}
+        run: copy ${{ env.exefile }} artifacts/${{ env.exefile }}
 #        if: github.event_name == 'push'
 
       - name: Publish xmltv.exe Artifact
