@@ -30,7 +30,7 @@ jobs:
         shell: powershell
          
       - name: Print exe filename
-        run: echo $exefile
+        run: echo "${{ env.exefile }}"
         
       - name: Uninstall existing strawberry perl
         if: ${{ inputs.arch == 'win32' }}
@@ -170,18 +170,17 @@ jobs:
 #        if: github.event_name == 'push'
 
       - name: Create target artifact directory
-        run: |
-          md "artifacts"
+        run: md "artifacts"
 #        if: github.event_name == 'push'
 
       - name: Copy xmltv.exe to Artifacts
-        run: copy xmltv.exe artifacts/$exefile
+        run: copy xmltv.exe artifacts/${{ env.exefile }}
 #        if: github.event_name == 'push'
 
       - name: Publish xmltv.exe Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: $exefile
+          name: ${{ env.exefile }}
           path: artifacts
           retention-days: 15
 #        if: github.event_name == 'push'
@@ -213,7 +212,7 @@ jobs:
       - name: Fetch files from windows-build
         uses: actions/download-artifact@v3
         with:
-          name: $exefile
+          name: ${{ env.exefile }}
           # artifacts/ now available in this job
 
       - name: Check if SSH params set
@@ -245,9 +244,8 @@ jobs:
 
       - name: Upload files
         run: |
-          scp -o StrictHostKeyChecking=no -o HostKeyAlgorithms=+ssh-rsa -P ${{ secrets.ALPHA_SSH_PORT }} $exefile ${{ secrets.ALPHA_SSH_USER }}@${{ secrets.ALPHA_SSH_HOST }}:${{ secrets.ALPHA_SSH_REMOTE_DIR }}
+          scp -o StrictHostKeyChecking=no -o HostKeyAlgorithms=+ssh-rsa -P ${{ secrets.ALPHA_SSH_PORT }} ${{ env.exefile }} ${{ secrets.ALPHA_SSH_USER }}@${{ secrets.ALPHA_SSH_HOST }}:${{ secrets.ALPHA_SSH_REMOTE_DIR }}
 #       if: steps.vars.outputs.ssh_ready == 'true'
         if: |
           github.event_name == 'push'
           && steps.vars.outputs.ssh_ready == 'true'
-
