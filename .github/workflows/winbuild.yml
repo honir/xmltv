@@ -21,19 +21,17 @@ jobs:
       fail-fast: false
 
     steps:
-    
       - name: Print build architecture
         run: echo ${{ inputs.arch }}     
         
       - name: Set exe filename
+        if: ${{ inputs.arch == 'win32'}}
         run: |
           echo "exefile=xmltv32.exe" >> $env:GITHUB_ENV
-        if: ${{ inputs.arch == 'win32'}}
          
       - name: Print exe filename
         run: |
           echo $exefile
-
         
       - name: Uninstall existing strawberry perl
         if: ${{ inputs.arch == 'win32' }}
@@ -42,11 +40,7 @@ jobs:
       - name: Install 32-bit strawberry perl
         if: ${{ inputs.arch == 'win32' }}
         run: choco install strawberryperl --x86
-    
-    
-    
-    
-    
+
       - name: Insure Strawberry perl is first in path
         run: echo "PATH=C:\Strawberry\c\bin;C:\Strawberry\perl\site\bin;C:\Strawberry\perl\bin;C:\msys64\mingw64\bin;C:\msys64\usr\bin;$Env:Path" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         shell: powershell
@@ -170,16 +164,16 @@ jobs:
 
       - name: gmake install
         run: gmake pure_install
-        if: github.event_name == 'push'
+#        if: github.event_name == 'push'
 
       - name: gmake xmltv.exe
         run: gmake xmltv.exe
-        if: github.event_name == 'push'
+#        if: github.event_name == 'push'
 
       - name: Create target artifact directory
         run: |
           md "artifacts"
-        if: github.event_name == 'push'
+#        if: github.event_name == 'push'
 
  #     - name: Copy xmltv.exe to Artifacts
  #       run: copy xmltv.exe artifacts/xmltv.exe
@@ -188,11 +182,10 @@ jobs:
       - name: Publish xmltv.exe Artifact
         uses: actions/upload-artifact@v3
         with:
-          #name: ${{ 'xmltv' + inputs.arch +'.exe' }}
-          name: xmltv.exe
+          name: $exefile
           path: artifacts
           retention-days: 15
-        if: github.event_name == 'push'
+#        if: github.event_name == 'push'
 
 
 
@@ -253,7 +246,7 @@ jobs:
 
       - name: Upload files
         run: |
-          scp -o StrictHostKeyChecking=no -o HostKeyAlgorithms=+ssh-rsa -P ${{ secrets.ALPHA_SSH_PORT }} xmltv.exe ${{ secrets.ALPHA_SSH_USER }}@${{ secrets.ALPHA_SSH_HOST }}:${{ secrets.ALPHA_SSH_REMOTE_DIR }}
+          scp -o StrictHostKeyChecking=no -o HostKeyAlgorithms=+ssh-rsa -P ${{ secrets.ALPHA_SSH_PORT }} $exefile ${{ secrets.ALPHA_SSH_USER }}@${{ secrets.ALPHA_SSH_HOST }}:${{ secrets.ALPHA_SSH_REMOTE_DIR }}
 #       if: steps.vars.outputs.ssh_ready == 'true'
         if: |
           github.event_name == 'push'
