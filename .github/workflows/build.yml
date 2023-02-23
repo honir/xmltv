@@ -320,12 +320,13 @@ jobs:
 
     strategy:
       matrix:
-        target: [win32 win64]
+        #target: [win64, win32]
+        target: [win32, win64]
         
     uses: ./.github/workflows/winbuild.yml
-      with:
-        arch: ${{ matrix.target }}
-      secrets: inherit
+    with:
+      arch: ${{ matrix.target }}
+    secrets: inherit
 
 
 
