@@ -4,9 +4,9 @@ name: winbuild
 on:
    workflow_call:
      inputs:
-       winarch:
-         required:true
-         type:string
+       arch:
+         required: true
+         type: string
 
 jobs:
   windows-build:
