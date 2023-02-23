@@ -25,7 +25,9 @@ jobs:
         
         
       - name: Print build architecture
-        run: echo $(format('xmltv{0}.exe', inputs.arch))
+        env: 
+          exe: $(format('xmltv{0}.exe', inputs.arch))
+        run: echo "$exe"
          
          
          
