@@ -26,7 +26,7 @@ jobs:
         
       - name: Print build architecture
         run: |
-          echo "exe=${{format('xmltv{0}.exe', inputs.arch)}}" >> $GITHUB_ENV
+          echo "exe=${{format('xmltv{0}.exe', inputs.arch)}}" >> $env:GITHUB_ENV
         if: ${{ inputs.arch == 'win32'}}
          
       - name: Print build architecture
