@@ -31,8 +31,15 @@ jobs:
          
       - name: Print build architecture
         run: |
-          echo ${{env.exe}}
+          echo $exe
         if: ${{ inputs.arch == 'win32'}}
+        
+        
+        
+        
+        
+        
+        
          
          
         
