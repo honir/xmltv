@@ -8,6 +8,9 @@ on:
          required: true
          type: string
 
+env:
+  exefile: xmltv.exe
+  
 jobs:
   windows-build:
     name: Build on Windows
@@ -20,28 +23,17 @@ jobs:
     steps:
     
       - name: Print build architecture
-        run: echo ${{ inputs.arch}}
+        run: echo ${{ inputs.arch}     
         
-        
-        
-      - name: Print build architecture
+      - name: Set exe filename
         run: |
-          echo "exe=${{format('xmltv{0}.exe', inputs.arch)}}" >> $env:GITHUB_ENV
+          echo "exefile=xmltv32.exe" >> $env:GITHUB_ENV
         if: ${{ inputs.arch == 'win32'}}
          
-      - name: Print build architecture
+      - name: Print exe filename
         run: |
-          echo $exe
-        if: ${{ inputs.arch == 'win32'}}
-        
-        
-        
-        
-        
-        
-        
-         
-         
+          echo $exefile
+
         
       - name: Uninstall existing strawberry perl
         if: ${{ inputs.arch == 'win32' }}
