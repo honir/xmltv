@@ -26,12 +26,11 @@ jobs:
         
       - name: Set exe filename
         if: ${{ inputs.arch == 'win32'}}
-        run: |
-          echo "exefile=xmltv32.exe" >> $env:GITHUB_ENV
+        run: echo "exefile=xmltv32.exe" >> $env:GITHUB_ENV
+        shell: powershell
          
       - name: Print exe filename
-        run: |
-          echo $exefile
+        run: echo $exefile
         
       - name: Uninstall existing strawberry perl
         if: ${{ inputs.arch == 'win32' }}
@@ -175,9 +174,9 @@ jobs:
           md "artifacts"
 #        if: github.event_name == 'push'
 
- #     - name: Copy xmltv.exe to Artifacts
- #       run: copy xmltv.exe artifacts/xmltv.exe
- #       if: github.event_name == 'push'
+      - name: Copy xmltv.exe to Artifacts
+        run: copy xmltv.exe artifacts/$exefile
+#        if: github.event_name == 'push'
 
       - name: Publish xmltv.exe Artifact
         uses: actions/upload-artifact@v3
@@ -214,7 +213,7 @@ jobs:
       - name: Fetch files from windows-build
         uses: actions/download-artifact@v3
         with:
-          name: xmltv.exe
+          name: $exefile
           # artifacts/ now available in this job
 
       - name: Check if SSH params set
