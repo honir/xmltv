@@ -23,7 +23,7 @@ jobs:
     steps:
     
       - name: Print build architecture
-        run: echo ${{ inputs.arch}     
+        run: echo ${{ inputs.arch }}     
         
       - name: Set exe filename
         run: |
