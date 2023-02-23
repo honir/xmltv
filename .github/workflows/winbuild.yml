@@ -4,7 +4,7 @@ name: winbuild
 on:
    workflow_call:
      inputs:
-       arch:
+       winarch:
          required:true
          type:string
 
