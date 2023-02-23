@@ -25,9 +25,9 @@ jobs:
         
         
       - name: Print build architecture
-        env: 
-          exe: $(format('xmltv{0}.exe', inputs.arch))
-        run: echo "$exe"
+        run: |
+          echo "exe=$(format('xmltv{0}.exe', inputs.arch))" >> $GITHUB_ENV
+          echo ${{env.exe}}
          
          
          
