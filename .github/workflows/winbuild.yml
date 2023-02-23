@@ -30,7 +30,7 @@ jobs:
         shell: powershell
          
       - name: Print exe filename
-        run: echo $exefile
+        run: echo "${{env.exefile}}"
         
       - name: Uninstall existing strawberry perl
         if: ${{ inputs.arch == 'win32' }}
@@ -170,8 +170,7 @@ jobs:
 #        if: github.event_name == 'push'
 
       - name: Create target artifact directory
-        run: |
-          md "artifacts"
+        run: md "artifacts"
 #        if: github.event_name == 'push'
 
       - name: Copy xmltv.exe to Artifacts
