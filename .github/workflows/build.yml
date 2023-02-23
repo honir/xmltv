@@ -326,7 +326,12 @@ jobs:
     uses: ./.github/workflows/winbuild.yml
     with:
       #arch: ${{ matrix.target }}
-      arch: win32
+      #arch: win32
+      
+      
+      arch: format('xmltv{0}.exe', ${{matrix.target}})
+          
+          
     secrets: inherit
 
 
