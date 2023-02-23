@@ -23,6 +23,13 @@ jobs:
         run: echo ${{ inputs.arch}}
         
         
+        
+      - name: Print build architecture
+        run: echo $(format('xmltv{0}.exe', inputs.arch))
+         
+         
+         
+        
       - name: Uninstall existing strawberry perl
         if: ${{ inputs.arch == 'win32' }}
         run: choco uninstall strawberryperl
