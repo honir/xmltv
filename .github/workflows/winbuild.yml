@@ -19,13 +19,18 @@ jobs:
 
     steps:
     
-      - name: uninstall existing strawberry perl
+      - name: Print build architecture
+        run: echo ${{ inputs.arch}}
+        
+        
+      - name: Uninstall existing strawberry perl
         if: ${{ inputs.arch == 'win32' }}
         run: choco uninstall strawberryperl
 
-      - name: install 32-bit strawberry perl
+      - name: Install 32-bit strawberry perl
         if: ${{ inputs.arch == 'win32' }}
         run: choco install strawberryperl --x86
+    
     
     
     
