@@ -49,7 +49,7 @@ jobs:
           echo "hash=$githash" >> $env:GITHUB_OUTPUT
 
 
-          echo "arch=win32" >> $env:GITHUB_OUTPUT
+          echo "arch=win64" >> $env:GITHUB_OUTPUT
 
 
 
@@ -57,23 +57,17 @@ jobs:
       - name: Create zip
         id: files
         run: |
-          echo "zipfilename=xmltv-${{ steps.vars.outputs.tag }}-${{ steps.vars.outputs.arch }}.zip"
           echo "zipfilename=xmltv-${{ steps.vars.outputs.tag }}-${{ steps.vars.outputs.arch }}.zip" >> $env:GITHUB_OUTPUT 
           # remove subdir from output zip
           7z a -tzip files.zip .\doc\QuickStart .\doc\README-Windows.md xmltv.dtd COPYING Changes 
-        
-        
-        
-        
-        
+
+
 
       - name: Create target artifact directory
         run: md "artifacts"
 
       - name: Copy zip to Artifacts
-        run: |
-          echo "${{ steps.files.outputs.zipfilename }}"
-          copy files.zip artifacts/${{ steps.files.outputs.zipfilename }}
+        run: copy files.zip artifacts/${{ steps.files.outputs.zipfilename }}
 
       - name: Publish zip Artifact
         uses: actions/upload-artifact@v3
