@@ -22,29 +22,72 @@ jobs:
         uses: actions/checkout@v3
 
 
-      - name: Create ankiaddon
-        run: 7z a -tzip folder.zip COPYING xmltv.dtd 
         
+      - name: Checkout tags
+        # need to avoid a shallow clone for git describe to work
+        run: git fetch --prune --unshallow --tags    
         
-        
+      - name: Make version string
+        id: vars
+        run: |
+          $gitid = "$(git describe HEAD)"
+          # e.g. "v1.1.2-17-g3b2d042a"
+          # note "v1.1.2" for tagged releases
+          $r = '^v(\d*(?:\.\d*){0,2})-(\d*)-g(.*)$'
+          if ( $gitid -imatch $r ) {
+            $gittag     = $matches[1]
+            $gitcommits = $matches[2]
+            $githash    = $matches[3]
+          }
+          if ( $gitcommits ) {
+            # zero fill the alpha
+            $gitcommits = "000$gitcommits"
+            $gitcommits = $gitcommits.substring($gitcommits.length-3,3)
+          }
+          echo "tag=$gittag" >> $env:GITHUB_OUTPUT
+          echo "release=$gitcommits" >> $env:GITHUB_OUTPUT
+          echo "hash=$githash" >> $env:GITHUB_OUTPUT
+
+
+          echo "arch=win32" >> $env:GITHUB_OUTPUT
+
+
+
+
+      - name: Create zip
+        id: files
+        run: |
+          echo "zipfilename=xmltv-${{ steps.vars.outputs.tag }}-${{ steps.vars.outputs.arch }}.zip" >> $env:GITHUB_OUTPUT 
+          # remove subdir from output zip
+          7z a -tzip files.zip .\doc\QuickStart .\doc\README-Windows.md xmltv.dtd COPYING Changes 
+
 
 
       - name: Create target artifact directory
         run: md "artifacts"
 
       - name: Copy zip to Artifacts
-        run: copy folder.zip artifacts/win32.zip
+        run: copy files.zip artifacts/${{ steps.files.outputs.zipfilename }}
 
       - name: Publish zip Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: win32.zip
+          name: ${{ steps.files.outputs.zipfilename }}
           path: artifacts
           retention-days: 1
 
 
 
 
+
+      - name: Edit exe filename
+        if: ${{ steps.vars.outputs.arch == 'win32' }}
+        run: |
+          sed -ri "s/^xmltv.exe :: /xmltv32.exe :: /" Makefile.PL
+          sed -ri "s/pp_autolink -o xmltv.exe/pp_autolink -o xmltv32.exe/" Makefile.PL
+          cat Makefile.PL
+          
+          
 
 
 
