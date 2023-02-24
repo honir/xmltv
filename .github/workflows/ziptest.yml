@@ -28,13 +28,39 @@ jobs:
         
         
         
+        
+        
+      - name: Make version string
+        id: vars
+        run: |
+          $gitid = "$(git describe HEAD)"
+          # e.g. "v1.1.2-17-g3b2d042a"
+          # note "v1.1.2" for tagged releases
+          $r = '^v(\d*(?:\.\d*){0,2})-(\d*)-g(.*)$'
+          if ( $gitid -imatch $r ) {
+            $gittag     = $matches[1]
+            $gitcommits = $matches[2]
+            $githash    = $matches[3]
+          }
+          if ( $gitcommits ) {
+            # zero fill the alpha
+            $gitcommits = "000$gitcommits"
+            $gitcommits = $gitcommits.substring($gitcommits.length-3,3)
+          }
+          echo "tag=$gittag" >> $env:GITHUB_OUTPUT
+          echo "release=$gitcommits" >> $env:GITHUB_OUTPUT
+          echo "hash=$githash" >> $env:GITHUB_OUTPUT
+
+
+          echo "arch=win32" >> $env:GITHUB_OUTPUT
+
 
 
       - name: Create target artifact directory
         run: md "artifacts"
 
       - name: Copy zip to Artifacts
-        run: copy folder.zip artifacts/win32.zip
+        run: copy folder.zip artifacts/xmltv-${{ steps.vars.outputs.tag }}-${{ steps.vars.outputs.arch }}.zip
 
       - name: Publish zip Artifact
         uses: actions/upload-artifact@v3
