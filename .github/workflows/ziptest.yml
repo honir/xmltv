@@ -80,5 +80,14 @@ jobs:
 
 
 
+      - name: Edit exe filename
+        if: ${{ steps.vars.outputs.arch == 'win32' }}
+        run: |
+          sed -ri "s/^xmltv.exe :: /xmltv32.exe :: /" Makefile.PL
+          sed -ri "s/pp_autolink -o xmltv.exe/pp_autolink -o xmltv32.exe/" Makefile.PL
+          cat Makefile.PL
+          
+          
+
 
 
