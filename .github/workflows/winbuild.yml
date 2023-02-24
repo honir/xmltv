@@ -142,18 +142,15 @@ jobs:
 
       - name: Update Version string
         # only if doesn't already contain an alpha
+        if: steps.vars.outputs.release != ''
         run: |
           sed -ri "s/(VERSION = ')[0-9\.]*?('.*?)$/\1${{ steps.vars.outputs.tag }}_${{ steps.vars.outputs.release }}\2/" Makefile.PL
           sed -ri "s/(VERSION = ')[0-9\.]*?('.*?)$/\1${{ steps.vars.outputs.tag }}_${{ steps.vars.outputs.release }}\2/" lib/XMLTV.pm.in 
-        if: |
-          steps.vars.outputs.release != ''
 
       - name: Check Version string
         run: |
           grep 'VERSION =' Makefile.PL
           grep 'VERSION =' lib/XMLTV.pm.in
-        if: |
-          steps.vars.outputs.release != ''
 
       - name: Set build filename
         # Build xmltv.exe (win64) or xmltv32.exe (win32) 
@@ -169,31 +166,31 @@ jobs:
         run: gmake
 
       - name: gmake install
+        if: github.event_name == 'push'
         run: gmake pure_install
-#        if: github.event_name == 'push'
 
       - name: gmake xmltv.exe
+        if: github.event_name == 'push'
         run: gmake ${{ env.exefile }}
-#        if: github.event_name == 'push'
 
       - name: Create target artifact directory
+        if: github.event_name == 'push'
         run: md "artifacts"
-#        if: github.event_name == 'push'
 
       - name: Copy xmltv.exe to artifacts
+        if: github.event_name == 'push'
         run: copy ${{ env.exefile }} artifacts/${{ env.exefile }}
-#        if: github.event_name == 'push'
 
       - name: Publish xmltv.exe artifact
+        if: github.event_name == 'push'
         uses: actions/upload-artifact@v3
         with:
           name: ${{ env.exefile }}
           path: artifacts
           retention-days: 15
-#        if: github.event_name == 'push'
 
       - name: Create zip
-#        if: github.event_name == 'push'
+        if: github.event_name == 'push'
         id: files
         run: |
           echo "zipfilename=xmltv-${{ steps.vars.outputs.tag }}-${{ inputs.arch }}.zip" >> $env:GITHUB_OUTPUT 
@@ -201,14 +198,14 @@ jobs:
           7z a -tzip files.zip ${{ env.exefile }} .\doc\QuickStart .\doc\README-Windows.md xmltv.dtd COPYING Changes 
 
       - name: Copy zip to artifacts
-#        if: github.event_name == 'push'
+        if: github.event_name == 'push'
         run: |
           copy files.zip artifacts/${{ steps.files.outputs.zipfilename }}
           # need to remove the .exe as upload-artifact does the whole folder
           remove-item artifacts/${{ env.exefile }} -Force
 
       - name: Publish zip artifact
-#        if: github.event_name == 'push'
+        if: github.event_name == 'push'
         uses: actions/upload-artifact@v3
         with:
           name: ${{ steps.files.outputs.zipfilename }}
@@ -223,7 +220,7 @@ jobs:
 
     needs: windows-build
 
-#    if: github.event_name == 'push'
+    if: github.event_name == 'push'
 
     # facilitate testing on forks
     # skip this workflow unless on XMLTV GH
@@ -251,28 +248,20 @@ jobs:
         run: echo ssh_ready=${{ steps.vars.outputs.ssh_ready }}
         
       - name: Load SSH
+        if: steps.vars.outputs.ssh_ready == 'true'
         run: |
           ssh-agent -a $SSH_AUTH_SOCK > /dev/null
           echo 'echo ${{ secrets.ALPHA_SSH_PASSPHRASE }}' > ~/.ssh_askpass && chmod +x ~/.ssh_askpass
           echo "${{ secrets.ALPHA_SSH_PRIVATE_KEY }}" | tr -d '\r' | DISPLAY=None SSH_ASKPASS=~/.ssh_askpass ssh-add - >/dev/null
           rm -f ~/.ssh_askpass
-#       if: steps.vars.outputs.ssh_ready == 'true'
-        if: |
-          github.event_name == 'push'
-          && steps.vars.outputs.ssh_ready == 'true'
 
       - name: Check SSH identity
+        if: steps.vars.outputs.ssh_ready == 'true'
         run: |
           ssh-add -l
-#       if: steps.vars.outputs.ssh_ready == 'true'
-        if: |
-          github.event_name == 'push'
-          && steps.vars.outputs.ssh_ready == 'true'
 
       - name: Upload files
+        if: steps.vars.outputs.ssh_ready == 'true'
         run: |
           scp -o StrictHostKeyChecking=no -o HostKeyAlgorithms=+ssh-rsa -P ${{ secrets.ALPHA_SSH_PORT }} ${{ env.exefile }} ${{ secrets.ALPHA_SSH_USER }}@${{ secrets.ALPHA_SSH_HOST }}:${{ secrets.ALPHA_SSH_REMOTE_DIR }}
-#       if: steps.vars.outputs.ssh_ready == 'true'
-        if: |
-          github.event_name == 'push'
-          && steps.vars.outputs.ssh_ready == 'true'
+
