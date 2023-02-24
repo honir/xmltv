@@ -22,14 +22,6 @@ jobs:
         uses: actions/checkout@v3
 
 
-      - name: Create zip
-        # remove subdir from output zip
-        run: 7z a -tzip folder.zip .\doc\QuickStart .\doc\README-Windows.md xmltv.dtd COPYING Changes 
-        
-        
-        
-        
-        
         
       - name: Checkout tags
         # need to avoid a shallow clone for git describe to work
@@ -61,16 +53,30 @@ jobs:
 
 
 
+
+      - name: Create zip
+        run: |
+          $zipfilename = xmltv-${{ steps.vars.outputs.tag }}-${{ steps.vars.outputs.arch }}.zip
+          # remove subdir from output zip
+          7z a -tzip files.zip .\doc\QuickStart .\doc\README-Windows.md xmltv.dtd COPYING Changes 
+        
+        
+        
+        
+        
+
       - name: Create target artifact directory
         run: md "artifacts"
 
       - name: Copy zip to Artifacts
-        run: copy folder.zip artifacts/xmltv-${{ steps.vars.outputs.tag }}-${{ steps.vars.outputs.arch }}.zip
+        run: |
+          echo ${{ zipfilename ))
+          copy files.zip artifacts/${{ zipfilename }}
 
       - name: Publish zip Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: win32.zip
+          name: ${{ zipfilename }}
           path: artifacts
           retention-days: 1
 
