@@ -155,6 +155,14 @@ jobs:
         if: |
           steps.vars.outputs.release != ''
 
+      - name: Set exe filename
+        # Build xmltv.exe (win64) or xmltv32.exe (win32) 
+        if: ${{ inputs.arch == 'win32' }}
+        run: |
+          sed -ri "s/^xmltv.exe :: /xmltv32.exe :: /" Makefile.PL
+          sed -ri "s/pp_autolink -o xmltv.exe/pp_autolink -o xmltv32.exe/" Makefile.PL
+          cat Makefile.PL
+
       - name: perl Makefile.PL
         run: perl Makefile.PL -default NO_PACKLIST=1 NO_PERLLOCAL=1
 
@@ -187,6 +195,25 @@ jobs:
 
 
 
+      - name: Create zip
+#        if: github.event_name == 'push'
+        id: files
+        run: |
+          echo "zipfilename=xmltv-${{ steps.vars.outputs.tag }}-${{ steps.vars.outputs.arch }}.zip" >> $env:GITHUB_OUTPUT 
+          # remove subdir from output zip
+          7z a -tzip files.zip ${{ env.exefile }} .\doc\QuickStart .\doc\README-Windows.md xmltv.dtd COPYING Changes 
+
+      - name: Copy zip to Artifacts
+#        if: github.event_name == 'push'
+        run: copy files.zip artifacts/${{ steps.files.outputs.zipfilename }}
+
+      - name: Publish zip Artifact
+#        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.files.outputs.zipfilename }}
+          path: artifacts
+          retention-days: 15
 
 
 
