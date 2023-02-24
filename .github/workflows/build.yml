@@ -320,7 +320,7 @@ jobs:
     # Build 32-bit and 64-bit versions.
     # Strictly speaking we only need the 32-bit version (since that will also run 
     #  on 64-bit) but there may be some benefit in the 64-bit Perl for machine-
-    #  intensive operations, such as tv_imdb.
+    #  intensive operations, such as tv_imdb
 
     strategy:
       matrix:
