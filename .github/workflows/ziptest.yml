@@ -1,5 +1,5 @@
 ---
-name: winbuild
+name: ziptest
 
 on:
    workflow_dispatch:
