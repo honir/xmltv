@@ -73,12 +73,12 @@ jobs:
           echo "${env:zipfilename}"
           copy files.zip artifacts/${env:zipfilename}
 
-  #    - name: Publish zip Artifact
-  #      uses: actions/upload-artifact@v3
-  #      with:
-  #        name: sponge
-  #        path: artifacts
-  #        retention-days: 1
+      - name: Publish zip Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${env:zipfilename}
+          path: artifacts
+          retention-days: 1
 
 
 
