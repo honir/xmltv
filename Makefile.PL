@@ -937,7 +937,7 @@ END
 xmltv32.exe :: $(EXE_FILES) lib/xmltv.pl lib/xmltv32.pl lib/exe_opt.pl
 	echo $(EXE_FILES)                             >exe_files.txt
 	perl lib/exe_opt.pl $(VERSION)                >exe_opt.txt
-	pp_autolink -o xmltv32.exe --cachedeps=pp.cache --reusable @exe_opt.txt lib/xmltv.pl $(EXE_FILES)
+	pp_autolink -o xmltv32.exe --cachedeps=pp.cache --reusable @exe_opt.txt lib/xmltv.pl lib/xmltv32.pl $(EXE_FILES)
 	$(RM_F) exe_files.txt
 	$(RM_F) exe_opt.txt
 
