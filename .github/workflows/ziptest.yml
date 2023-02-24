@@ -22,8 +22,8 @@ jobs:
         uses: actions/checkout@v3
 
 
-      - name: Create ankiaddon
-        run: 7z a -tzip folder.zip COPYING xmltv.dtd 
+      - name: Create zip
+        run: 7z a -tzip folder.zip doc/QuickStart doc/README-Windows.md xmltv.dtd COPYING Changes 
         
         
         
