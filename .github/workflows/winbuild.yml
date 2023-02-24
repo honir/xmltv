@@ -181,11 +181,11 @@ jobs:
         run: md "artifacts"
 #        if: github.event_name == 'push'
 
-      - name: Copy xmltv.exe to Artifacts
+      - name: Copy xmltv.exe to artifacts
         run: copy ${{ env.exefile }} artifacts/${{ env.exefile }}
 #        if: github.event_name == 'push'
 
-      - name: Publish xmltv.exe Artifact
+      - name: Publish xmltv.exe artifact
         uses: actions/upload-artifact@v3
         with:
           name: ${{ env.exefile }}
@@ -199,15 +199,18 @@ jobs:
 #        if: github.event_name == 'push'
         id: files
         run: |
-          echo "zipfilename=xmltv-${{ steps.vars.outputs.tag }}-${{ steps.vars.outputs.arch }}.zip" >> $env:GITHUB_OUTPUT 
+          echo "zipfilename=xmltv-${{ steps.vars.outputs.tag }}-${{ inputs.arch }}.zip" >> $env:GITHUB_OUTPUT 
           # remove subdir from output zip
           7z a -tzip files.zip ${{ env.exefile }} .\doc\QuickStart .\doc\README-Windows.md xmltv.dtd COPYING Changes 
 
-      - name: Copy zip to Artifacts
+      - name: Copy zip to artifacts
 #        if: github.event_name == 'push'
-        run: copy files.zip artifacts/${{ steps.files.outputs.zipfilename }}
+        run: |
+          copy files.zip artifacts/${{ steps.files.outputs.zipfilename }}
+          # need to remove the .exe as upload-artifact dos the whole folder
+          rm -f artifacts/${{ env.exefile }}
 
-      - name: Publish zip Artifact
+      - name: Publish zip artifact
 #        if: github.event_name == 'push'
         uses: actions/upload-artifact@v3
         with:
@@ -227,6 +230,7 @@ jobs:
 #    if: github.event_name == 'push'
 
     # facilitate testing on forks
+    # skip this workflow unless on XMLTV GH
     if: github.repository == 'XMLTV/xmltv'
 
     runs-on: ubuntu-latest
