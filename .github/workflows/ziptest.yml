@@ -71,7 +71,7 @@ jobs:
       - name: Copy zip to Artifacts
         run: |
           echo "${{ env:zipfilename }}"
-          copy files.zip artifacts/${{ env:zipfilename }}
+          #copy files.zip artifacts/${{ env:zipfilename }}
 
       - name: Publish zip Artifact
         uses: actions/upload-artifact@v3
