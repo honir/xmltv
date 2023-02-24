@@ -23,6 +23,7 @@ jobs:
 
 
       - name: Create zip
+        # remove subdir from output zip
         run: 7z a -tzip folder.zip .\doc\QuickStart .\doc\README-Windows.md xmltv.dtd COPYING Changes 
         
         
