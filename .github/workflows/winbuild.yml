@@ -220,11 +220,10 @@ jobs:
 
     needs: windows-build
 
-    if: github.event_name == 'push'
-
     # facilitate testing on forks
     # skip this workflow unless on XMLTV GH
     if: github.repository == 'XMLTV/xmltv'
+      && github.event_name == 'push'
 
     runs-on: ubuntu-latest
 
