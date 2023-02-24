@@ -49,7 +49,7 @@ jobs:
           echo "hash=$githash" >> $env:GITHUB_OUTPUT
 
 
-          echo "arch=win64" >> $env:GITHUB_OUTPUT
+          echo "arch=win32" >> $env:GITHUB_OUTPUT
 
 
 
