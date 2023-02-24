@@ -319,14 +319,14 @@ jobs:
     # Build Windows self-extracting executables.
     # Build 32-bit and 64-bit versions.
     # Strictly speaking we only need the 32-bit version (since that will also run 
-    # on 64-bit) but there may be some benefit in the 64-bit Perl for machine-
-    # intensive operations,such as tv_imdb.
+    #  on 64-bit) but there may be some benefit in the 64-bit Perl for machine-
+    #  intensive operations, such as tv_imdb.
     
     strategy:
       matrix:
         #target: [win64, win32]
-        #target: [win32, win64]
-        target: [win32]
+        #target: [win32]
+        target: [win64]
         
     uses: ./.github/workflows/winbuild.yml
     with:
