@@ -56,7 +56,7 @@ jobs:
 
       - name: Create zip
         run: |
-          $zipfilename = xmltv-${{ steps.vars.outputs.tag }}-${{ steps.vars.outputs.arch }}.zip
+          echo "zipfilename = xmltv-${{ steps.vars.outputs.tag }}-${{ steps.vars.outputs.arch }}.zip" >> $env:GITHUB_ENV 
           # remove subdir from output zip
           7z a -tzip files.zip .\doc\QuickStart .\doc\README-Windows.md xmltv.dtd COPYING Changes 
         
@@ -70,13 +70,13 @@ jobs:
 
       - name: Copy zip to Artifacts
         run: |
-          echo ${{ zipfilename ))
-          copy files.zip artifacts/${{ zipfilename }}
+          echo ${{ env.zipfilename ))
+          copy files.zip artifacts/${{ env:zipfilename }}
 
       - name: Publish zip Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ zipfilename }}
+          name: ${{ env:zipfilename }}
           path: artifacts
           retention-days: 1
 
