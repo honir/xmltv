@@ -57,7 +57,8 @@ jobs:
       - name: Create zip
         id: files
         run: |
-          echo "zipfilename = xmltv-${{ steps.vars.outputs.tag }}-${{ steps.vars.outputs.arch }}.zip" >> $env:GITHUB_OUTPUT 
+          echo "zipfilename=xmltv-${{ steps.vars.outputs.tag }}-${{ steps.vars.outputs.arch }}.zip"
+          echo "zipfilename=xmltv-${{ steps.vars.outputs.tag }}-${{ steps.vars.outputs.arch }}.zip" >> $env:GITHUB_OUTPUT 
           # remove subdir from output zip
           7z a -tzip files.zip .\doc\QuickStart .\doc\README-Windows.md xmltv.dtd COPYING Changes 
         
