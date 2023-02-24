@@ -70,13 +70,13 @@ jobs:
 
       - name: Copy zip to Artifacts
         run: |
-          echo ${{ env.zipfilename ))
-          copy files.zip artifacts/${{ env:zipfilename }}
+          echo $env.zipfilename
+          copy files.zip artifacts/$env:zipfilename
 
       - name: Publish zip Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ env:zipfilename }}
+          name: $env:zipfilename
           path: artifacts
           retention-days: 1
 
