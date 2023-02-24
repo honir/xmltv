@@ -76,7 +76,7 @@ jobs:
       - name: Publish zip Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ${env:zipfilename}
+          name: scooby
           path: artifacts
           retention-days: 1
 
