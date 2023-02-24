@@ -1,0 +1,50 @@
+---
+name: ziptest
+
+on:
+   workflow_dispatch:
+
+env:
+  exefile: xmltv.exe
+  
+jobs:
+  windows-build:
+    name: Build on Windows
+
+    runs-on: windows-latest
+
+    strategy:
+      fail-fast: false
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+
+      - name: Create ankiaddon
+        run: 7z a -tzip folder.zip COPYING xmltv.dtd 
+        
+        
+        
+
+
+      - name: Create target artifact directory
+        run: md "artifacts"
+
+      - name: Copy zip to Artifacts
+        run: copy folder.zip artifacts/win32.zip
+
+      - name: Publish zip Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: win32.zip
+          path: artifacts
+          retention-days: 1
+
+
+
+
+
+
+
