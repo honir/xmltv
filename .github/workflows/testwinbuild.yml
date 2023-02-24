@@ -10,7 +10,7 @@ on:
 
 env:
   exefile: xmltv.exe
-  
+
 jobs:
   windows-build:
     name: Build on Windows ${{ inputs.arch }}
@@ -22,92 +22,92 @@ jobs:
 
     steps:
       - name: Print build architecture
-        run: echo ${{ inputs.arch }}     
-        
+        run: echo ${{ inputs.arch }}
+
       - name: Set exe filename
         if: ${{ inputs.arch == 'win32'}}
         run: echo "exefile=xmltv32.exe" >> $env:GITHUB_ENV
         shell: powershell
-         
+
       - name: Print exe filename
         run: echo "${{ env.exefile }}"
-        
-      - name: Uninstall existing strawberry perl
-        if: ${{ inputs.arch == 'win32' }}
-        run: choco uninstall strawberryperl
 
-      - name: Install 32-bit strawberry perl
-        if: ${{ inputs.arch == 'win32' }}
-        run: choco install strawberryperl --x86
+      #- name: Uninstall existing strawberry perl
+        #if: ${{ inputs.arch == 'win32' }}
+        #run: choco uninstall strawberryperl
 
-      - name: Insure Strawberry perl is first in path
-        run: echo "PATH=C:\Strawberry\c\bin;C:\Strawberry\perl\site\bin;C:\Strawberry\perl\bin;C:\msys64\mingw64\bin;C:\msys64\usr\bin;$Env:Path" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-        shell: powershell
-        
-      - name: Print perl version
-        run: perl -v
+      #- name: Install 32-bit strawberry perl
+        #if: ${{ inputs.arch == 'win32' }}
+        #run: choco install strawberryperl --x86
 
-      - name: Install perl requirements
-        run: >
-          cpanm --notest --no-interactive
-          App::PP::Autolink
-          Archive::Zip
-          CGI
-          CGI::Carp
-          Date::Manip
-          DateTime
-          DateTime::Format::ISO8601
-          DateTime::Format::SQLite
-          DBD::SQLite
-          DBI
-          File::HomeDir
-          File::Slurp
-          HTML::FormatText
-          HTTP::Cache::Transparent
-          IO::Scalar
-          JSON
-          Lingua::EN::Numbers::Ordinate
-          Lingua::Preferred
-          List::MoreUtils
-          LWP::Protocol::https
-          LWP::UserAgent::Determined
-          Memoize
-          Module::Install
-          Params::Validate
-          SOAP::Lite
-          Term::ProgressBar
-          Tk
-          Tk::TableMatrix
-          Unicode::String
-          Unicode::UTF8simple
-          URI::Encode
-          XML::DOM
-          XML::LibXML
-          XML::LibXSLT
-          XML::Twig
-          XML::Writer
-          XML::TreePP
+      #- name: Insure Strawberry perl is first in path
+        #run: echo "PATH=C:\Strawberry\c\bin;C:\Strawberry\perl\site\bin;C:\Strawberry\perl\bin;C:\msys64\mingw64\bin;C:\msys64\usr\bin;$Env:Path" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        #shell: powershell
 
-      - name: Download Packer
-        # modify PAR::Packer to print our custom "don't panic" message
-        working-directory: /temp
-        run: |
-          # cpan -g  didn't work, so...
-          wget https://cpan.metacpan.org/authors/id/R/RS/RSCHUPP/PAR-Packer-1.054.tar.gz
-          gzip -d PAR-Packer-1.054.tar.gz
-          tar xf PAR-Packer-1.054.tar
-          cd PAR-Packer-1.054
-          sed -i '/if ( rc == -1 && errno != EEXIST)/i\    if ( rc == 0 ) fprintf(stderr,\"Note: This will take a while on first run\\\n\");' myldr/boot.c
+      #- name: Print perl version
+        #run: perl -v
 
-      - name: Install Packer
-        working-directory: /temp
-        run: |
-          cd PAR-Packer-1.054
-          cpanm --notest --no-interactive .
+      #- name: Install perl requirements
+        #run: >
+          #cpanm --notest --no-interactive
+          #App::PP::Autolink
+          #Archive::Zip
+          #CGI
+          #CGI::Carp
+          #Date::Manip
+          #DateTime
+          #DateTime::Format::ISO8601
+          #DateTime::Format::SQLite
+          #DBD::SQLite
+          #DBI
+          #File::HomeDir
+          #File::Slurp
+          #HTML::FormatText
+          #HTTP::Cache::Transparent
+          #IO::Scalar
+          #JSON
+          #Lingua::EN::Numbers::Ordinate
+          #Lingua::Preferred
+          #List::MoreUtils
+          #LWP::Protocol::https
+          #LWP::UserAgent::Determined
+          #Memoize
+          #Module::Install
+          #Params::Validate
+          #SOAP::Lite
+          #Term::ProgressBar
+          #Tk
+          #Tk::TableMatrix
+          #Unicode::String
+          #Unicode::UTF8simple
+          #URI::Encode
+          #XML::DOM
+          #XML::LibXML
+          #XML::LibXSLT
+          #XML::Twig
+          #XML::Writer
+          #XML::TreePP
 
-      - name: Show content of log files on failure
-        if: ${{ failure() }}
-        run: cat C:/Users/RUNNER~1/.cpanm/work/*/build.log
+      #- name: Download Packer
+        ## modify PAR::Packer to print our custom "don't panic" message
+        #working-directory: /temp
+        #run: |
+          ## cpan -g  didn't work, so...
+          #wget https://cpan.metacpan.org/authors/id/R/RS/RSCHUPP/PAR-Packer-1.054.tar.gz
+          #gzip -d PAR-Packer-1.054.tar.gz
+          #tar xf PAR-Packer-1.054.tar
+          #cd PAR-Packer-1.054
+          #sed -i '/if ( rc == -1 && errno != EEXIST)/i\    if ( rc == 0 ) fprintf(stderr,\"Note: This will take a while on first run\\\n\");' myldr/boot.c
+
+      #- name: Install Packer
+        #working-directory: /temp
+        #run: |
+          #cd PAR-Packer-1.054
+          #cpanm --notest --no-interactive .
+
+      #- name: Show content of log files on failure
+        #if: ${{ failure() }}
+        #run: cat C:/Users/RUNNER~1/.cpanm/work/*/build.log
 
       - name: Checkout
         uses: actions/checkout@v3
@@ -153,7 +153,7 @@ jobs:
           grep 'VERSION =' lib/XMLTV.pm.in
 
       - name: Set build filename
-        # Build xmltv.exe (win64) or xmltv32.exe (win32) 
+        # Build xmltv.exe (win64) or xmltv32.exe (win32)
         if: ${{ inputs.arch == 'win32' }}
         run: |
           sed -ri "s/^xmltv.exe :: /xmltv32.exe :: /" Makefile.PL
@@ -162,34 +162,36 @@ jobs:
       - name: perl Makefile.PL
         run: perl Makefile.PL -default NO_PACKLIST=1 NO_PERLLOCAL=1
 
-      - name: gmake
-        run: gmake
+      #- name: gmake
+        #run: gmake
 
-      - name: gmake install
-        if: github.event_name == 'push'
-        run: gmake pure_install
+      #- name: gmake install
+        #if: github.event_name == 'push'
+        #run: gmake pure_install
 
-      - name: gmake xmltv.exe
-        if: github.event_name == 'push'
-        run: gmake ${{ env.exefile }}
+      #- name: gmake xmltv.exe
+        #if: github.event_name == 'push'
+        #run: gmake ${{ env.exefile }}
 
-      - name: Create target artifact directory
-        if: github.event_name == 'push'
-        run: md "artifacts"
+      #- name: Create target artifact directory
+        #if: github.event_name == 'push'
+        #run: md "artifacts"
 
-      - name: Copy xmltv.exe to artifacts
-        if: github.event_name == 'push'
-        run: copy ${{ env.exefile }} artifacts/${{ env.exefile }}
+      #- name: Copy xmltv.exe to artifacts
+        #if: github.event_name == 'push'
+        #run: copy ${{ env.exefile }} artifacts/${{ env.exefile }}
 
-      - name: Publish xmltv.exe artifact
-        if: github.event_name == 'push'
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ env.exefile }}
-          path: artifacts
-          retention-days: 15
+      #- name: Publish xmltv.exe artifact
+        #if: github.event_name == 'push'
+        #uses: actions/upload-artifact@v3
+        #with:
+          #name: ${{ env.exefile }}
+          #path: artifacts
+          #retention-days: 15
 
       - name: Create zip
+        # upload-artifact will unfortunately create a double zip  
+        #   https://github.com/actions/upload-artifact#limitations
         if: github.event_name == 'push'
         id: files
         run: |
@@ -222,8 +224,13 @@ jobs:
 
     # facilitate testing on forks
     # skip this workflow unless on XMLTV GH
-    if: github.repository == 'XMLTV/xmltv'
-      && github.event_name == 'push'
+    #if: github.repository == 'XMLTV/xmltv'
+      #&& github.event_name == 'push'
+      #&& ${{ inputs.arch == 'win64'}}
+      
+    if: github.repository == 'honir/xmltv'
+      && github.event_name == 'manual trigger'
+      && ${{ inputs.arch == 'win64' }}
 
     runs-on: ubuntu-latest
 
@@ -232,6 +239,16 @@ jobs:
       SSH_AUTH_SOCK: /tmp/ssh_agent.sock
 
     steps:
+      - name: Print build architecture
+        run: echo ${{ inputs.arch }}
+
+      - name: Set exe filename
+        if: ${{ inputs.arch == 'win32' }}
+        run: echo "exefile=xmltv32.exe" >> $GITHUB_ENV
+
+      - name: Print exe filename
+        run: echo "${{ env.exefile }}"
+
       - name: Fetch files from windows-build
         uses: actions/download-artifact@v3
         with:
@@ -245,7 +262,7 @@ jobs:
 
       - name: Check if SSH defined
         run: echo ssh_ready=${{ steps.vars.outputs.ssh_ready }}
-        
+
       - name: Load SSH
         if: steps.vars.outputs.ssh_ready == 'true'
         run: |
