@@ -23,8 +23,7 @@ jobs:
 
 
       - name: Create ankiaddon
-        run: zip -r folder.zip README-Windows.md COPYING xmltv.dtd 
-        shell: bash
+        run: 7z -a -tzip folder.zip README-Windows.md COPYING xmltv.dtd 
         
         
         
