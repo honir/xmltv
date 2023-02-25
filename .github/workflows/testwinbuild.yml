@@ -266,7 +266,7 @@ jobs:
         
         
       - name: test
-        run: echo "${{ jobs.windows_build.steps.setvars.outputs.exefile }}"
+        run: echo "${{ needs.windows_build.outputs.exefile }}"
             
         
       - name: Print build architecture
