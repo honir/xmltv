@@ -258,6 +258,13 @@ jobs:
       - name: test
         run: echo "${{env.exefile}}"
         
+        
+      - name: test
+        env: 
+            super_secret: ${{ secrets.ALPHA_SSH_HOST }}
+        run: echo "${{env.super_secret}}"
+            
+        
       - name: Print build architecture
         run: echo ${{ inputs.arch }}
 
