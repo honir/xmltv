@@ -20,6 +20,9 @@ jobs:
 
     strategy:
       fail-fast: false
+      
+    outputs:
+      exefilename: ${{ steps.setvars.outputs.exefile }}
 
     steps:
       - name: Print build architecture
@@ -265,8 +268,8 @@ jobs:
         run: echo "${{env.EXEFILE}}"
         
         
-      - name: test
-        run: echo "${{ needs.windows_build.outputs.exefile }}"
+      - name: test needs
+        run: echo "${{ needs.windows_build.outputs.exefilename }}"
             
         
       - name: Print build architecture
