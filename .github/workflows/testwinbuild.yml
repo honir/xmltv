@@ -224,7 +224,7 @@ jobs:
           remove-item artifacts/${{ env.EXEFILE }} -Force
 
       - name: Publish zip artifact
-        #if: github.event_name == 'push'
+        #if: github.event_name == 'push' 
         if: github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v3
         with:
