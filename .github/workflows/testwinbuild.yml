@@ -22,7 +22,8 @@ jobs:
       fail-fast: false
       
     outputs:
-      exefilename: ${{ steps.setvars.outputs.exefile }}
+      # can't pass env vars between jobs so we use outputs to send to the dependent job
+      exefile: ${{ steps.setexefile.outputs.exefile }}
 
     steps:
       - name: Print build architecture
@@ -36,7 +37,7 @@ jobs:
         shell: powershell
 
       - name: Print exe filename
-        id: setvars
+        id: setexefile
         run: |
           echo "${{ env.EXEFILE }}"
           # make the env var available to other jobs
@@ -248,6 +249,8 @@ jobs:
       
     if: github.repository == 'honir/xmltv'
       && github.event_name == 'workflow_dispatch'
+      && env.EXEFILE == 'xmltv.exe'
+      
       #&& github.env.INPUT_ARCH == 'win32'
       #&& github.env.exefile == 'xmltv.exe'
 
@@ -256,7 +259,7 @@ jobs:
     env:
       # Use the same ssh-agent socket across all steps
       SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-      OUTPUTX: ${{ needs.windows-build.outputs.exefilename }}
+      EXEFILE: ${{ needs.windows-build.outputs.exefile }}
 
     steps:
       
@@ -273,15 +276,15 @@ jobs:
         
       - name: test needs
         run: |
-          echo "${{ needs.windows-build.outputs.exefilename }}"       
+          echo "${{ needs.windows-build.outputs.exefile }}"       
           
       - name: test needs2
         run: |
-          echo "${{ env.OUTPUTX }}"   
+          echo "${{ env.EXEFILE }}"   
           
       - name: test needs3
         env:
-          OUTPUT1: ${{ needs.windows-build.outputs.exefilename }}
+          OUTPUT1: ${{ needs.windows-build.outputs.exefile }}
         run: |
           echo "${{ env.OUTPUT1 }}"
         
