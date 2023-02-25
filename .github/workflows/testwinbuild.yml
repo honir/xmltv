@@ -236,7 +236,7 @@ jobs:
 
 
   windows-upload:
-    name: Upload Windows build
+    name: Upload Windows build ${{ inputs.arch }}
 
     needs: windows-build
 
