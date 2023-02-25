@@ -242,18 +242,18 @@ jobs:
     # skip this workflow unless on XMLTV GH
     #if: github.repository == 'XMLTV/xmltv'
       #&& github.event_name == 'push'
-      #&& needs.windows-build.outputs.exefile == 'xmltv.exe'
+      #&& inputs.arch == 'win64'
       
     if: github.repository == 'honir/xmltv'
       && github.event_name == 'workflow_dispatch'
       && inputs.arch == 'win64'
-      #&& needs.windows-build.outputs.exefile == 'xmltv32.exe'
-      # INPUTS not available here but OUTPUTS are!
+      
+      #OR  && needs.windows-build.outputs.exefile == 'xmltv32.exe'
 
     env:
+      EXEFILE: ${{ needs.windows-build.outputs.exefile }}
       # Use the same ssh-agent socket across all steps
       SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-      EXEFILE: ${{ needs.windows-build.outputs.exefile }}
       
     runs-on: ubuntu-latest
 
@@ -267,21 +267,17 @@ jobs:
         run: echo "${{ github.inputs.arch }}"
       - name: test env.exefile
         run: echo "${{env.EXEFILE}}"
-        
-        
-      - name: test needs
+      - name: test needs via direct call
         run: |
           echo "${{ needs.windows-build.outputs.exefile }}"       
-          
-      - name: test needs2
-        run: |
-          echo "${{ env.EXEFILE }}"   
-          
-      - name: test needs3
-        env:
+      - name: test needs via local call
+        env: 
           OUTPUT1: ${{ needs.windows-build.outputs.exefile }}
         run: |
           echo "${{ env.OUTPUT1 }}"
+      - name: test needs via env.EXEFILE
+        run: 
+          echo "${{ env.EXEFILE }}"   
         
         
             
@@ -289,11 +285,7 @@ jobs:
       - name: Print build architecture
         run: echo ${{ inputs.arch }}
 
-      - name: Set exe filename
-        if: ${{ inputs.arch == 'win32' }}
-        run: echo "exefile=xmltv32.exe" >> $GITHUB_ENV
-
-      - name: Print exe filename
+      - name: Print exe filename (passed from build job)
         run: echo "${{ env.EXEFILE }}"
 
  #     - name: Fetch files from windows-build
