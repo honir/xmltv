@@ -10,7 +10,7 @@ on:
 
 env:
   exefile: xmltv.exe
-  
+
 jobs:
   windows-build:
     name: Build on Windows ${{ inputs.arch }}
@@ -22,16 +22,16 @@ jobs:
 
     steps:
       - name: Print build architecture
-        run: echo ${{ inputs.arch }}     
-        
+        run: echo ${{ inputs.arch }}
+
       - name: Set exe filename
         if: ${{ inputs.arch == 'win32'}}
         run: echo "exefile=xmltv32.exe" >> $env:GITHUB_ENV
         shell: powershell
-         
+
       - name: Print exe filename
         run: echo "${{ env.exefile }}"
-        
+
       - name: Uninstall existing strawberry perl
         if: ${{ inputs.arch == 'win32' }}
         run: choco uninstall strawberryperl
@@ -43,7 +43,7 @@ jobs:
       - name: Insure Strawberry perl is first in path
         run: echo "PATH=C:\Strawberry\c\bin;C:\Strawberry\perl\site\bin;C:\Strawberry\perl\bin;C:\msys64\mingw64\bin;C:\msys64\usr\bin;$Env:Path" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         shell: powershell
-        
+
       - name: Print perl version
         run: perl -v
 
@@ -153,7 +153,7 @@ jobs:
           grep 'VERSION =' lib/XMLTV.pm.in
 
       - name: Set build filename
-        # Build xmltv.exe (win64) or xmltv32.exe (win32) 
+        # Build xmltv.exe (win64) or xmltv32.exe (win32)
         if: ${{ inputs.arch == 'win32' }}
         run: |
           sed -ri "s/^xmltv.exe :: /xmltv32.exe :: /" Makefile.PL
@@ -224,6 +224,7 @@ jobs:
     # skip this workflow unless on XMLTV GH
     if: github.repository == 'XMLTV/xmltv'
       && github.event_name == 'push'
+      && ${{ inputs.arch == 'win64'}}
 
     runs-on: ubuntu-latest
 
@@ -232,6 +233,16 @@ jobs:
       SSH_AUTH_SOCK: /tmp/ssh_agent.sock
 
     steps:
+      - name: Print build architecture
+        run: echo ${{ inputs.arch }}
+
+      - name: Set exe filename
+        if: ${{ inputs.arch == 'win32'}}
+        run: echo "exefile=xmltv32.exe" >> $GITHUB_ENV
+
+      - name: Print exe filename
+        run: echo "${{ env.exefile }}"
+
       - name: Fetch files from windows-build
         uses: actions/download-artifact@v3
         with:
@@ -245,7 +256,7 @@ jobs:
 
       - name: Check if SSH defined
         run: echo ssh_ready=${{ steps.vars.outputs.ssh_ready }}
-        
+
       - name: Load SSH
         if: steps.vars.outputs.ssh_ready == 'true'
         run: |
