@@ -226,7 +226,7 @@ jobs:
         
       - name: Copy "exe" to artifacts
         #if: github.event_name == 'push'
-        if: github.event_name == workflow_dispatch'
+        if: github.event_name == 'workflow_dispatch'
         run: |
           remove-item artifacts/files.zip -Force
           copy Makefile.PL artifacts/${{ steps.files.outputs.zipfilename }}
