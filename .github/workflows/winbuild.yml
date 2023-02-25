@@ -5,11 +5,12 @@ on:
    workflow_call:
      inputs:
        arch:
+         description: Architecture to build - either 'win32' or 'win64'
          required: true
          type: string
 
 env:
-  exefile: xmltv.exe
+  EXEFILE: xmltv.exe
 
 jobs:
   windows-build:
@@ -20,17 +21,24 @@ jobs:
     strategy:
       fail-fast: false
 
+    outputs:
+      # can't pass env vars between jobs so we use outputs to send to the dependent job
+      exefile: ${{ steps.setexefile.outputs.exefile }}
+
     steps:
       - name: Print build architecture
         run: echo ${{ inputs.arch }}
 
       - name: Set exe filename
         if: ${{ inputs.arch == 'win32'}}
-        run: echo "exefile=xmltv32.exe" >> $env:GITHUB_ENV
-        shell: powershell
+        run: echo "EXEFILE=xmltv32.exe" >> $env:GITHUB_ENV
 
       - name: Print exe filename
-        run: echo "${{ env.exefile }}"
+        id: setexefile
+        run: |
+          echo "${{ env.EXEFILE }}"
+          # make the env var available to other jobs
+          echo "exefile=${{ env.EXEFILE }}" >> $env:GITHUB_OUTPUT
 
       - name: Uninstall existing strawberry perl
         if: ${{ inputs.arch == 'win32' }}
@@ -185,11 +193,13 @@ jobs:
         if: github.event_name == 'push'
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ env.exefile }}
+          name: ${{ env.EXEFILE }}
           path: artifacts
           retention-days: 15
 
       - name: Create zip
+        # upload-artifact will unfortunately create a double zip  
+        #   https://github.com/actions/upload-artifact#limitations
         if: github.event_name == 'push'
         id: files
         run: |
@@ -202,7 +212,7 @@ jobs:
         run: |
           copy files.zip artifacts/${{ steps.files.outputs.zipfilename }}
           # need to remove the .exe as upload-artifact does the whole folder
-          remove-item artifacts/${{ env.exefile }} -Force
+          remove-item artifacts/${{ env.EXEFILE }} -Force
 
       - name: Publish zip artifact
         if: github.event_name == 'push'
@@ -222,26 +232,24 @@ jobs:
 
     # facilitate testing on forks
     # skip this workflow unless on XMLTV GH
+    # and only run for 64-bit build
     if: github.repository == 'XMLTV/xmltv'
       && github.event_name == 'push'
-      && ${{ inputs.arch == 'win64'}}
-
-    runs-on: ubuntu-latest
+      && inputs.arch == 'win64'
 
     env:
+      EXEFILE: ${{ needs.windows-build.outputs.exefile }}
       # Use the same ssh-agent socket across all steps
       SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+
+    runs-on: ubuntu-latest
 
     steps:
       - name: Print build architecture
         run: echo ${{ inputs.arch }}
 
-      - name: Set exe filename
-        if: ${{ inputs.arch == 'win32'}}
-        run: echo "exefile=xmltv32.exe" >> $GITHUB_ENV
-
-      - name: Print exe filename
-        run: echo "${{ env.exefile }}"
+      - name: Print exe filename (passed from build job)
+        run: echo "${{ env.EXEFILE }}"
 
       - name: Fetch files from windows-build
         uses: actions/download-artifact@v3

@@ -21,7 +21,7 @@ jobs:
 
     strategy:
       fail-fast: false
-      
+
     outputs:
       # can't pass env vars between jobs so we use outputs to send to the dependent job
       exefile: ${{ steps.setexefile.outputs.exefile }}
@@ -234,6 +234,7 @@ jobs:
 
 
 
+
   windows-upload:
     name: Upload Windows build
 
@@ -255,11 +256,11 @@ jobs:
       EXEFILE: ${{ needs.windows-build.outputs.exefile }}
       # Use the same ssh-agent socket across all steps
       SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-      
+
     runs-on: ubuntu-latest
 
     steps:
-            
+
       - name: test INPUT_ARCH
         run: echo "${{ env.INPUT_ARCH }}"
       - name: test inputs.arch
@@ -279,10 +280,10 @@ jobs:
       - name: test needs via env.EXEFILE
         run: 
           echo "${{ env.EXEFILE }}"   
-        
-        
-            
-        
+
+
+
+
       - name: Print build architecture
         run: echo ${{ inputs.arch }}
 
@@ -298,7 +299,6 @@ jobs:
       - name: Check if SSH params set
         id: vars
         run: |
-          echo "${{ secrets.ALPHA_SSH_HOST }}"
           echo "ssh_ready=${{ secrets.ALPHA_SSH_HOST != '' }}" >> $GITHUB_OUTPUT
 
       - name: Check if SSH defined
