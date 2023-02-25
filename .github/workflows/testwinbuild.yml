@@ -241,7 +241,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: artifacts/${{ steps.files.outputs.zipfilename }}
           asset_name: ${{ steps.files.outputs.zipfilename }}
-          tag: "XMLTV ${{ steps.vars.outputs.tag }}"
+          tag: "v1.2.1"
           overwrite: true
     
     
