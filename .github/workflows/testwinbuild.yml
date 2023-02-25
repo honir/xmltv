@@ -27,14 +27,11 @@ jobs:
 
     steps:
       - name: Print build architecture
-        run: |
-          env
-          echo ${{ inputs.arch }}
+        run: echo ${{ inputs.arch }}
 
       - name: Set exe filename
         if: ${{ inputs.arch == 'win32'}}
         run: echo "EXEFILE=xmltv32.exe" >> $env:GITHUB_ENV
-        shell: powershell
 
       - name: Print exe filename
         id: setexefile
@@ -241,29 +238,26 @@ jobs:
 
     needs: windows-build
 
-    env:
-      # Use the same ssh-agent socket across all steps
-      SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-      EXEFILE: ${{ needs.windows-build.outputs.exefile }}
-
     # facilitate testing on forks
     # skip this workflow unless on XMLTV GH
     #if: github.repository == 'XMLTV/xmltv'
       #&& github.event_name == 'push'
-      #&& ${{ inputs.arch == 'win64'}}
+      #&& needs.windows-build.outputs.exefile == 'xmltv.exe'
       
     if: github.repository == 'honir/xmltv'
       && github.event_name == 'workflow_dispatch'
-      && needs.windows-build.outputs.exefile == 'xmltv.exe'
-      
-      #&& github.env.INPUT_ARCH == 'win32'
-      #&& github.env.exefile == 'xmltv.exe'
+      && needs.windows-build.outputs.exefile == 'xmltv32.exe'
+      # INPUTS not available here but OUTPUTS are!
 
+    env:
+      # Use the same ssh-agent socket across all steps
+      SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+      EXEFILE: ${{ needs.windows-build.outputs.exefile }}
+      
     runs-on: ubuntu-latest
 
     steps:
-      
-      
+            
       - name: test INPUT_ARCH
         run: echo "${{ env.INPUT_ARCH }}"
       - name: test inputs.arch
