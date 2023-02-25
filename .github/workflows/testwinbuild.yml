@@ -6,6 +6,7 @@ on:
    workflow_call:
      inputs:
        arch:
+         description: Architecture to build - either 'win32' or 'win64'
          required: true
          type: string
 
