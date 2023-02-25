@@ -194,7 +194,7 @@ jobs:
         # upload-artifact will unfortunately create a double zip  
         #   https://github.com/actions/upload-artifact#limitations
         #if: github.event_name == 'push'
-        if: github.event_name == 'manual trigger'
+        if: github.event_name == 'workflow_dispatch'
         id: files
         run: |
           echo "zipfilename=xmltv-${{ steps.vars.outputs.tag }}-${{ inputs.arch }}.zip" >> $env:GITHUB_OUTPUT 
@@ -203,7 +203,7 @@ jobs:
 
       - name: Copy zip to artifacts
         #if: github.event_name == 'push'
-        if: github.event_name == 'manual trigger'
+        if: github.event_name == 'workflow_dispatch'
         run: |
           copy files.zip artifacts/${{ steps.files.outputs.zipfilename }}
           # need to remove the .exe as upload-artifact does the whole folder
@@ -211,7 +211,7 @@ jobs:
 
       - name: Publish zip artifact
         #if: github.event_name == 'push'
-        if: github.event_name == 'manual trigger'
+        if: github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v3
         with:
           name: ${{ steps.files.outputs.zipfilename }}
@@ -226,14 +226,14 @@ jobs:
         
       - name: Copy "exe" to artifacts
         #if: github.event_name == 'push'
-        if: github.event_name == 'manual trigger'
+        if: github.event_name == workflow_dispatch'
         run: |
           remove-item artifacts/files.zip -Force
           copy Makefile.PL artifacts/${{ steps.files.outputs.zipfilename }}
 
       - name: Publish zip artifact
         #if: github.event_name == 'push'
-        if: github.event_name == 'manual trigger'
+        if: github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v3
         with:
           name: ${{ steps.files.outputs.zipfilename }}
