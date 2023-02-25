@@ -235,15 +235,14 @@ jobs:
 
 
           
-      - name: Upload binaries to release
+      - name: Upload files to Release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: artifacts/${{ steps.files.outputs.zipfilename }}
-          asset_name: mything
-          tag: ${{ github.ref }}
+          asset_name: ${{ steps.files.outputs.zipfilename }}
+          tag: ${{ steps.vars.outputs.tag }}
           overwrite: true
-          body: "This is my release text"
     
     
     
