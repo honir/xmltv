@@ -250,7 +250,11 @@ jobs:
 
     steps:
       - name: test
-        run: echo "${{env.INPUT_ARCH}}"
+        run: echo "${{ env.INPUT_ARCH }}"
+      - name: test
+        run: echo "${{ inputs.arch }}"
+      - name: test
+        run: echo "${{ github.inputs.arch }}"
       - name: test
         run: echo "${{env.exefile}}"
         
