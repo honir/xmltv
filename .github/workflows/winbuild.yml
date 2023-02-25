@@ -290,5 +290,5 @@ jobs:
       - name: Upload files
         if: steps.vars.outputs.ssh_ready == 'true'
         run: |
-          scp -o StrictHostKeyChecking=no -o HostKeyAlgorithms=+ssh-rsa -P ${{ secrets.ALPHA_SSH_PORT }} ${{ env.exefile }} ${{ secrets.ALPHA_SSH_USER }}@${{ secrets.ALPHA_SSH_HOST }}:${{ secrets.ALPHA_SSH_REMOTE_DIR }}
+          scp -o StrictHostKeyChecking=no -o HostKeyAlgorithms=+ssh-rsa -P ${{ secrets.ALPHA_SSH_PORT }} ${{ env.EXEFILE }} ${{ secrets.ALPHA_SSH_USER }}@${{ secrets.ALPHA_SSH_HOST }}:${{ secrets.ALPHA_SSH_REMOTE_DIR }}
 
