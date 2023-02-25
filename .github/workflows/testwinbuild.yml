@@ -239,7 +239,7 @@ jobs:
       
     if: github.repository == 'honir/xmltv'
       && github.event_name == 'manual trigger'
-      && github.env.exefile == 'win64'
+      && github.env.exefile == 'xmltv.exe'
 
     runs-on: ubuntu-latest
 
