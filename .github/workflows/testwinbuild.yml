@@ -1,15 +1,17 @@
 ---
-name: winbuild
+#name: winbuild
+name: testwinbuild
 
 on:
    workflow_call:
      inputs:
        arch:
+         description: Architecture to build - either 'win32' or 'win64'
          required: true
          type: string
 
 env:
-  exefile: xmltv.exe
+  EXEFILE: xmltv.exe
 
 jobs:
   windows-build:
@@ -20,17 +22,24 @@ jobs:
     strategy:
       fail-fast: false
 
+    outputs:
+      # can't pass env vars between jobs so we use outputs to send to the dependent job
+      exefile: ${{ steps.setexefile.outputs.exefile }}
+
     steps:
       - name: Print build architecture
         run: echo ${{ inputs.arch }}
 
       - name: Set exe filename
         if: ${{ inputs.arch == 'win32'}}
-        run: echo "exefile=xmltv32.exe" >> $env:GITHUB_ENV
-        shell: powershell
+        run: echo "EXEFILE=xmltv32.exe" >> $env:GITHUB_ENV
 
       - name: Print exe filename
-        run: echo "${{ env.exefile }}"
+        id: setexefile
+        run: |
+          echo "${{ env.EXEFILE }}"
+          # make the env var available to other jobs
+          echo "exefile=${{ env.EXEFILE }}" >> $env:GITHUB_OUTPUT
 
       #- name: Uninstall existing strawberry perl
         #if: ${{ inputs.arch == 'win32' }}
@@ -159,8 +168,8 @@ jobs:
           sed -ri "s/^xmltv.exe :: /xmltv32.exe :: /" Makefile.PL
           sed -ri "s/pp_autolink -o xmltv.exe/pp_autolink -o xmltv32.exe/" Makefile.PL
 
-      - name: perl Makefile.PL
-        run: perl Makefile.PL -default NO_PACKLIST=1 NO_PERLLOCAL=1
+      #- name: perl Makefile.PL
+        #run: perl Makefile.PL -default NO_PACKLIST=1 NO_PERLLOCAL=1
 
       #- name: gmake
         #run: gmake
@@ -173,41 +182,50 @@ jobs:
         #if: github.event_name == 'push'
         #run: gmake ${{ env.exefile }}
 
-      #- name: Create target artifact directory
+      - name: Create target artifact directory
         #if: github.event_name == 'push'
-        #run: md "artifacts"
+        if: github.event_name == 'workflow_dispatch'
+        run: md "artifacts"
 
-      #- name: Copy xmltv.exe to artifacts
+      - name: Copy xmltv.exe to artifacts
         #if: github.event_name == 'push'
+        if: github.event_name == 'workflow_dispatch'
         #run: copy ${{ env.exefile }} artifacts/${{ env.exefile }}
+        # dummy file while testing
+        run: copy Makefile.PL artifacts/${{ env.EXEFILE }}
 
-      #- name: Publish xmltv.exe artifact
+      - name: Publish xmltv.exe artifact
         #if: github.event_name == 'push'
-        #uses: actions/upload-artifact@v3
-        #with:
-          #name: ${{ env.exefile }}
-          #path: artifacts
-          #retention-days: 15
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.EXEFILE }}
+          path: artifacts
+          retention-days: 15
 
       - name: Create zip
         # upload-artifact will unfortunately create a double zip  
         #   https://github.com/actions/upload-artifact#limitations
-        if: github.event_name == 'push'
+        #if: github.event_name == 'push'
+        if: github.event_name == 'workflow_dispatch'
         id: files
         run: |
           echo "zipfilename=xmltv-${{ steps.vars.outputs.tag }}-${{ inputs.arch }}.zip" >> $env:GITHUB_OUTPUT 
           # remove subdir from output zip
-          7z a -tzip files.zip ${{ env.exefile }} .\doc\QuickStart .\doc\README-Windows.md xmltv.dtd COPYING Changes 
+          #7z a -tzip files.zip ${{ env.exefile }} .\doc\QuickStart .\doc\README-Windows.md xmltv.dtd COPYING Changes 
+          7z a -tzip files.zip .\doc\QuickStart .\doc\README-Windows.md xmltv.dtd COPYING Changes 
 
       - name: Copy zip to artifacts
-        if: github.event_name == 'push'
+        #if: github.event_name == 'push'
+        if: github.event_name == 'workflow_dispatch'
         run: |
           copy files.zip artifacts/${{ steps.files.outputs.zipfilename }}
           # need to remove the .exe as upload-artifact does the whole folder
-          remove-item artifacts/${{ env.exefile }} -Force
+          remove-item artifacts/${{ env.EXEFILE }} -Force
 
       - name: Publish zip artifact
-        if: github.event_name == 'push'
+        #if: github.event_name == 'push'
+        if: github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v3
         with:
           name: ${{ steps.files.outputs.zipfilename }}
@@ -218,7 +236,7 @@ jobs:
 
 
   windows-upload:
-    name: Upload Windows build
+    name: Upload Windows build ${{ inputs.arch }}
 
     needs: windows-build
 
@@ -226,34 +244,57 @@ jobs:
     # skip this workflow unless on XMLTV GH
     #if: github.repository == 'XMLTV/xmltv'
       #&& github.event_name == 'push'
-      #&& ${{ inputs.arch == 'win64'}}
+      #&& inputs.arch == 'win64'
       
     if: github.repository == 'honir/xmltv'
-      && github.event_name == 'manual trigger'
-      && ${{ inputs.arch == 'win64' }}
-
-    runs-on: ubuntu-latest
+      && github.event_name == 'workflow_dispatch'
+      && inputs.arch == 'win64'
+      
+      #OR  && needs.windows-build.outputs.exefile == 'xmltv32.exe'
 
     env:
+      EXEFILE: ${{ needs.windows-build.outputs.exefile }}
       # Use the same ssh-agent socket across all steps
       SSH_AUTH_SOCK: /tmp/ssh_agent.sock
 
+    runs-on: ubuntu-latest
+
     steps:
+
+      - name: test INPUT_ARCH
+        run: echo "${{ env.INPUT_ARCH }}"
+      - name: test inputs.arch
+        run: echo "${{ inputs.arch }}"
+      - name: test github.inputs.arch
+        run: echo "${{ github.inputs.arch }}"
+      - name: test env.exefile
+        run: echo "${{env.EXEFILE}}"
+      - name: test needs via direct call
+        run: |
+          echo "${{ needs.windows-build.outputs.exefile }}"       
+      - name: test needs via local call
+        env: 
+          OUTPUT1: ${{ needs.windows-build.outputs.exefile }}
+        run: |
+          echo "${{ env.OUTPUT1 }}"
+      - name: test needs via env.EXEFILE
+        run: 
+          echo "${{ env.EXEFILE }}"   
+
+
+
+
       - name: Print build architecture
         run: echo ${{ inputs.arch }}
 
-      - name: Set exe filename
-        if: ${{ inputs.arch == 'win32' }}
-        run: echo "exefile=xmltv32.exe" >> $GITHUB_ENV
+      - name: Print exe filename (passed from build job)
+        run: echo "${{ env.EXEFILE }}"
 
-      - name: Print exe filename
-        run: echo "${{ env.exefile }}"
-
-      - name: Fetch files from windows-build
-        uses: actions/download-artifact@v3
-        with:
-          name: ${{ env.exefile }}
-          # artifacts/ now available in this job
+ #     - name: Fetch files from windows-build
+ #       uses: actions/download-artifact@v3
+ #       with:
+ #         name: ${{ env.exefile }}
+ #         # artifacts/ now available in this job
 
       - name: Check if SSH params set
         id: vars
