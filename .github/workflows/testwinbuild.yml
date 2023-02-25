@@ -10,7 +10,7 @@ on:
          type: string
 
 env:
-  exefile: xmltv.exe
+  EXEFILE: xmltv.exe
 
 jobs:
   windows-build:
@@ -27,11 +27,11 @@ jobs:
 
       - name: Set exe filename
         if: ${{ inputs.arch == 'win32'}}
-        run: echo "exefile=xmltv32.exe" >> $env:GITHUB_ENV
+        run: echo "EXEFILE=xmltv32.exe" >> $env:GITHUB_ENV
         shell: powershell
 
       - name: Print exe filename
-        run: echo "${{ env.exefile }}"
+        run: echo "${{ env.EXEFILE }}"
 
       #- name: Uninstall existing strawberry perl
         #if: ${{ inputs.arch == 'win32' }}
@@ -182,16 +182,16 @@ jobs:
       - name: Copy xmltv.exe to artifacts
         #if: github.event_name == 'push'
         if: github.event_name == 'workflow_dispatch'
-        #run: copy ${{ env.exefile }} artifacts/${{ env.exefile }}
+        #run: copy ${{ env.exefile }} artifacts/${{ env.EXEFILE }}
         # dummy file while testing
-        run: copy Makefile.PL artifacts/${{ env.exefile }}
+        run: copy Makefile.PL artifacts/${{ env.EXEFILE }}
 
       - name: Publish xmltv.exe artifact
         #if: github.event_name == 'push'
         if: github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ env.exefile }}
+          name: ${{ env.EXEFILE }}
           path: artifacts
           retention-days: 15
 
@@ -204,7 +204,7 @@ jobs:
         run: |
           echo "zipfilename=xmltv-${{ steps.vars.outputs.tag }}-${{ inputs.arch }}.zip" >> $env:GITHUB_OUTPUT 
           # remove subdir from output zip
-          #7z a -tzip files.zip ${{ env.exefile }} .\doc\QuickStart .\doc\README-Windows.md xmltv.dtd COPYING Changes 
+          #7z a -tzip files.zip ${{ env.EXEFILE }} .\doc\QuickStart .\doc\README-Windows.md xmltv.dtd COPYING Changes 
           7z a -tzip files.zip .\doc\QuickStart .\doc\README-Windows.md xmltv.dtd COPYING Changes 
 
       - name: Copy zip to artifacts
@@ -213,7 +213,7 @@ jobs:
         run: |
           copy files.zip artifacts/${{ steps.files.outputs.zipfilename }}
           # need to remove the .exe as upload-artifact does the whole folder
-          remove-item artifacts/${{ env.exefile }} -Force
+          remove-item artifacts/${{ env.EXEFILE }} -Force
 
       - name: Publish zip artifact
         #if: github.event_name == 'push'
@@ -271,13 +271,13 @@ jobs:
         run: echo "exefile=xmltv32.exe" >> $GITHUB_ENV
 
       - name: Print exe filename
-        run: echo "${{ env.exefile }}"
+        run: echo "${{ env.EXEFILE }}"
 
-      - name: Fetch files from windows-build
-        uses: actions/download-artifact@v3
-        with:
-          name: ${{ env.exefile }}
-          # artifacts/ now available in this job
+ #     - name: Fetch files from windows-build
+ #       uses: actions/download-artifact@v3
+ #       with:
+ #         name: ${{ env.exefile }}
+ #         # artifacts/ now available in this job
 
       - name: Check if SSH params set
         id: vars
@@ -304,5 +304,5 @@ jobs:
       - name: Upload files
         if: steps.vars.outputs.ssh_ready == 'true'
         run: |
-  ###        scp -o StrictHostKeyChecking=no -o HostKeyAlgorithms=+ssh-rsa -P ${{ secrets.ALPHA_SSH_PORT }} ${{ env.exefile }} ${{ secrets.ALPHA_SSH_USER }}@${{ secrets.ALPHA_SSH_HOST }}:${{ secrets.ALPHA_SSH_REMOTE_DIR }}
+          scp -o StrictHostKeyChecking=no -o HostKeyAlgorithms=+ssh-rsa -P ${{ secrets.ALPHA_SSH_PORT }} ${{ env.exefile }} ${{ secrets.ALPHA_SSH_USER }}@${{ secrets.ALPHA_SSH_HOST }}:${{ secrets.ALPHA_SSH_REMOTE_DIR }}
 
