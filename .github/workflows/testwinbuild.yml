@@ -256,8 +256,11 @@ jobs:
     env:
       # Use the same ssh-agent socket across all steps
       SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+      OUTPUTX: ${{ needs.windows_build.outputs.exefilename }}
 
     steps:
+      
+      
       - name: test INPUT_ARCH
         run: echo "${{ env.INPUT_ARCH }}"
       - name: test inputs.arch
@@ -270,8 +273,19 @@ jobs:
         
       - name: test needs
         run: |
-          echo "${{ needs.windows_build.outputs.exefilename }}"
-          console.log(${{ needs.windows_build.outputs }})
+          echo "${{ needs.windows_build.outputs.exefilename }}"       
+          
+      - name: test needs2
+        run: |
+          echo "${{ env.OUTPUTX }}"   
+          
+      - name: test needs3
+        env:
+          OUTPUT1: ${{ needs.windows_build.outputs.exefilename }}
+        run: |
+          echo "${{ env.OUTPUT1 }}"
+        
+        
             
         
       - name: Print build architecture
