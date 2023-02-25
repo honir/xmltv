@@ -41,82 +41,82 @@ jobs:
           # make the env var available to other jobs
           echo "exefile=${{ env.EXEFILE }}" >> $env:GITHUB_OUTPUT
 
-      #- name: Uninstall existing strawberry perl
-        #if: ${{ inputs.arch == 'win32' }}
-        #run: choco uninstall strawberryperl
+      - name: Uninstall existing strawberry perl
+        if: ${{ inputs.arch == 'win32' }}
+        run: choco uninstall strawberryperl
 
-      #- name: Install 32-bit strawberry perl
-        #if: ${{ inputs.arch == 'win32' }}
-        #run: choco install strawberryperl --x86
+      - name: Install 32-bit strawberry perl
+        if: ${{ inputs.arch == 'win32' }}
+        run: choco install strawberryperl --x86
 
-      #- name: Insure Strawberry perl is first in path
-        #run: echo "PATH=C:\Strawberry\c\bin;C:\Strawberry\perl\site\bin;C:\Strawberry\perl\bin;C:\msys64\mingw64\bin;C:\msys64\usr\bin;$Env:Path" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-        #shell: powershell
+      - name: Insure Strawberry perl is first in path
+        run: echo "PATH=C:\Strawberry\c\bin;C:\Strawberry\perl\site\bin;C:\Strawberry\perl\bin;C:\msys64\mingw64\bin;C:\msys64\usr\bin;$Env:Path" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        shell: powershell
 
-      #- name: Print perl version
-        #run: perl -v
+      - name: Print perl version
+        run: perl -v
 
-      #- name: Install perl requirements
-        #run: >
-          #cpanm --notest --no-interactive
-          #App::PP::Autolink
-          #Archive::Zip
-          #CGI
-          #CGI::Carp
-          #Date::Manip
-          #DateTime
-          #DateTime::Format::ISO8601
-          #DateTime::Format::SQLite
-          #DBD::SQLite
-          #DBI
-          #File::HomeDir
-          #File::Slurp
-          #HTML::FormatText
-          #HTTP::Cache::Transparent
-          #IO::Scalar
-          #JSON
-          #Lingua::EN::Numbers::Ordinate
-          #Lingua::Preferred
-          #List::MoreUtils
-          #LWP::Protocol::https
-          #LWP::UserAgent::Determined
-          #Memoize
-          #Module::Install
-          #Params::Validate
-          #SOAP::Lite
-          #Term::ProgressBar
-          #Tk
-          #Tk::TableMatrix
-          #Unicode::String
-          #Unicode::UTF8simple
-          #URI::Encode
-          #XML::DOM
-          #XML::LibXML
-          #XML::LibXSLT
-          #XML::Twig
-          #XML::Writer
-          #XML::TreePP
+      - name: Install perl requirements
+        run: >
+          cpanm --notest --no-interactive
+          App::PP::Autolink
+          Archive::Zip
+          CGI
+          CGI::Carp
+          Date::Manip
+          DateTime
+          DateTime::Format::ISO8601
+          DateTime::Format::SQLite
+          DBD::SQLite
+          DBI
+          File::HomeDir
+          File::Slurp
+          HTML::FormatText
+          HTTP::Cache::Transparent
+          IO::Scalar
+          JSON
+          Lingua::EN::Numbers::Ordinate
+          Lingua::Preferred
+          List::MoreUtils
+          LWP::Protocol::https
+          LWP::UserAgent::Determined
+          Memoize
+          Module::Install
+          Params::Validate
+          SOAP::Lite
+          Term::ProgressBar
+          Tk
+          Tk::TableMatrix
+          Unicode::String
+          Unicode::UTF8simple
+          URI::Encode
+          XML::DOM
+          XML::LibXML
+          XML::LibXSLT
+          XML::Twig
+          XML::Writer
+          XML::TreePP
 
-      #- name: Download Packer
-        ## modify PAR::Packer to print our custom "don't panic" message
-        #working-directory: /temp
-        #run: |
-          ## cpan -g  didn't work, so...
-          #wget https://cpan.metacpan.org/authors/id/R/RS/RSCHUPP/PAR-Packer-1.054.tar.gz
-          #gzip -d PAR-Packer-1.054.tar.gz
-          #tar xf PAR-Packer-1.054.tar
-          #cd PAR-Packer-1.054
-          #sed -i '/if ( rc == -1 && errno != EEXIST)/i\    if ( rc == 0 ) fprintf(stderr,\"Note: This will take a while on first run\\\n\");' myldr/boot.c
+      - name: Download Packer
+        # modify PAR::Packer to print our custom "don't panic" message
+        working-directory: /temp
+        run: |
+          # cpan -g  didn't work, so...
+          wget https://cpan.metacpan.org/authors/id/R/RS/RSCHUPP/PAR-Packer-1.054.tar.gz
+          gzip -d PAR-Packer-1.054.tar.gz
+          tar xf PAR-Packer-1.054.tar
+          cd PAR-Packer-1.054
+          sed -i '/if ( rc == -1 && errno != EEXIST)/i\    if ( rc == 0 ) fprintf(stderr,\"Note: This will take a while on first run\\\n\");' myldr/boot.c
 
-      #- name: Install Packer
-        #working-directory: /temp
-        #run: |
-          #cd PAR-Packer-1.054
-          #cpanm --notest --no-interactive .
+      - name: Install Packer
+        working-directory: /temp
+        run: |
+          cd PAR-Packer-1.054
+          cpanm --notest --no-interactive .
 
-      #- name: Show content of log files on failure
-        #if: ${{ failure() }}
-        #run: cat C:/Users/RUNNER~1/.cpanm/work/*/build.log
+      - name: Show content of log files on failure
+        if: ${{ failure() }}
+        run: cat C:/Users/RUNNER~1/.cpanm/work/*/build.log
 
       - name: Checkout
         uses: actions/checkout@v3
@@ -169,19 +169,19 @@ jobs:
           sed -ri "s/^xmltv.exe :: /xmltv32.exe :: /" Makefile.PL
           sed -ri "s/pp_autolink -o xmltv.exe/pp_autolink -o xmltv32.exe/" Makefile.PL
 
-      #- name: perl Makefile.PL
-        #run: perl Makefile.PL -default NO_PACKLIST=1 NO_PERLLOCAL=1
+      - name: perl Makefile.PL
+        run: perl Makefile.PL -default NO_PACKLIST=1 NO_PERLLOCAL=1
 
-      #- name: gmake
-        #run: gmake
+      - name: gmake
+        run: gmake
 
-      #- name: gmake install
-        #if: github.event_name == 'push'
-        #run: gmake pure_install
+      - name: gmake install
+        if: github.event_name == 'push'
+        run: gmake pure_install
 
-      #- name: gmake xmltv.exe
-        #if: github.event_name == 'push'
-        #run: gmake ${{ env.exefile }}
+      - name: gmake xmltv.exe
+        if: github.event_name == 'push'
+        run: gmake ${{ env.exefile }}
 
       - name: Create target artifact directory
         #if: github.event_name == 'push'
@@ -191,9 +191,9 @@ jobs:
       - name: Copy xmltv.exe to artifacts
         #if: github.event_name == 'push'
         if: github.event_name == 'workflow_dispatch'
-        #run: copy ${{ env.exefile }} artifacts/${{ env.exefile }}
+        run: copy ${{ env.exefile }} artifacts/${{ env.exefile }}
         # dummy file while testing
-        run: copy Makefile.PL artifacts/${{ env.EXEFILE }}
+        #run: copy Makefile.PL artifacts/${{ env.EXEFILE }}
 
       - name: Publish xmltv.exe artifact
         #if: github.event_name == 'push'
@@ -213,8 +213,8 @@ jobs:
         run: |
           echo "zipfilename=xmltv-${{ steps.vars.outputs.tag }}-${{ inputs.arch }}.zip" >> $env:GITHUB_OUTPUT 
           # remove subdir from output zip
-          #7z a -tzip files.zip ${{ env.exefile }} .\doc\QuickStart .\doc\README-Windows.md xmltv.dtd COPYING Changes 
-          7z a -tzip files.zip .\doc\QuickStart .\doc\README-Windows.md xmltv.dtd COPYING Changes 
+          7z a -tzip files.zip ${{ env.exefile }} .\doc\QuickStart .\doc\README-Windows.md xmltv.dtd COPYING Changes 
+          #7z a -tzip files.zip .\doc\QuickStart .\doc\README-Windows.md xmltv.dtd COPYING Changes 
 
       - name: Copy zip to artifacts
         #if: github.event_name == 'push'
@@ -242,7 +242,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: artifacts/${{ steps.files.outputs.zipfilename }}
           asset_name: ${{ steps.files.outputs.zipfilename }}
-          tag: "v1.2.1"
+          tag: "v${{ steps.vars.outputs.tag }}"
           overwrite: true
     
     
