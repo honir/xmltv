@@ -256,7 +256,7 @@ jobs:
     env:
       # Use the same ssh-agent socket across all steps
       SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-      OUTPUTX: ${{ needs.windows_build.outputs.exefilename }}
+      OUTPUTX: ${{ needs.windows-build.outputs.exefilename }}
 
     steps:
       
@@ -273,7 +273,7 @@ jobs:
         
       - name: test needs
         run: |
-          echo "${{ needs.windows_build.outputs.exefilename }}"       
+          echo "${{ needs.windows-build.outputs.exefilename }}"       
           
       - name: test needs2
         run: |
@@ -281,7 +281,7 @@ jobs:
           
       - name: test needs3
         env:
-          OUTPUT1: ${{ needs.windows_build.outputs.exefilename }}
+          OUTPUT1: ${{ needs.windows-build.outputs.exefilename }}
         run: |
           echo "${{ env.OUTPUT1 }}"
         
