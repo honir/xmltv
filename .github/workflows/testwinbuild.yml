@@ -239,7 +239,7 @@ jobs:
       
     if: github.repository == 'honir/xmltv'
       && github.event_name == 'workflow_dispatch'
-      && github.env.INPUT_ARCH == 'win32'
+      #&& github.env.INPUT_ARCH == 'win32'
       #&& github.env.exefile == 'xmltv.exe'
 
     runs-on: ubuntu-latest
@@ -251,6 +251,8 @@ jobs:
     steps:
       - name: test
         run: echo "${{env.INPUT_ARCH}}"
+      - name: test
+        run: echo "${{env.exefile}}"
         
       - name: Print build architecture
         run: echo ${{ inputs.arch }}
