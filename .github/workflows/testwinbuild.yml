@@ -234,12 +234,16 @@ jobs:
 
 
 
-      - name: Update GH Release
-        uses: johnwbyrd/update-release@v1.0.0
+          
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          files: artifacts/${{ env.EXEFILE }} artifacts/${{ steps.files.outputs.zipfilename }}
-          release: "Fork ${{ steps.vars.outputs.tag }}"
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: artifacts/${{ env.EXEFILE }}
+          asset_name: mything
+          tag: ${{ github.ref }}
+          overwrite: true
+          body: "This is my release text"
     
     
     
