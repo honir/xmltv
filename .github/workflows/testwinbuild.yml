@@ -250,7 +250,7 @@ jobs:
       && github.event_name == 'workflow_dispatch'
       && inputs.arch == 'win64'
       
-      #OR  && needs.windows-build.outputs.exefile == 'xmltv32.exe'
+      #OR  && needs.windows-build.outputs.exefile == 'xmltv32.exe' 
 
     env:
       EXEFILE: ${{ needs.windows-build.outputs.exefile }}
