@@ -145,6 +145,7 @@ jobs:
           echo "tag=$gittag" >> $env:GITHUB_OUTPUT
           echo "release=$gitcommits" >> $env:GITHUB_OUTPUT
           echo "hash=$githash" >> $env:GITHUB_OUTPUT
+          echo "$gitid"
 
       - name: Check release distance
         run: echo release=${{ steps.vars.outputs.release }}
@@ -224,7 +225,7 @@ jobs:
           remove-item artifacts/${{ env.EXEFILE }} -Force
 
       - name: Publish zip artifact
-        #if: github.event_name == 'push'
+        #if: github.event_name == 'push' 
         if: github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v3
         with:
@@ -233,6 +234,19 @@ jobs:
           retention-days: 15
 
 
+
+          
+      - name: Upload files to Release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: artifacts/${{ steps.files.outputs.zipfilename }}
+          asset_name: ${{ steps.files.outputs.zipfilename }}
+          tag: "v1.2.1"
+          overwrite: true
+    
+    
+    
 
 
   windows-upload:
