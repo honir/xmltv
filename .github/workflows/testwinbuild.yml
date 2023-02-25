@@ -246,7 +246,7 @@ jobs:
       
     if: github.repository == 'honir/xmltv'
       && github.event_name == 'workflow_dispatch'
-      && inputs.arch == 'win32'
+      && inputs.arch == 'win64'
       #&& needs.windows-build.outputs.exefile == 'xmltv32.exe'
       # INPUTS not available here but OUTPUTS are!
 
