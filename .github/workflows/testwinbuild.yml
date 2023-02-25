@@ -239,7 +239,7 @@ jobs:
       
     if: github.repository == 'honir/xmltv'
       && github.event_name == 'manual trigger'
-      && github.env.INPUT_ARCH == 'win32'
+      #&& github.env.INPUT_ARCH == 'win32'
       #&& github.env.exefile == 'xmltv.exe'
 
     runs-on: ubuntu-latest
@@ -249,6 +249,9 @@ jobs:
       SSH_AUTH_SOCK: /tmp/ssh_agent.sock
 
     steps:
+      - name: test
+        run: echo "${{github.env.INPUT_ARCH}}"
+        
       - name: Print build architecture
         run: echo ${{ inputs.arch }}
 
