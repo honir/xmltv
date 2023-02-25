@@ -234,6 +234,16 @@ jobs:
 
 
 
+      - name: Update GH Release
+        uses: johnwbyrd/update-release@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: artifacts/${{ env.EXEFILE }} artifacts/${{ steps.files.outputs.zipfilename }}
+          release: "Fork ${{ steps.vars.outputs.tag }}"
+    
+    
+    
+
 
   windows-upload:
     name: Upload Windows build ${{ inputs.arch }}
