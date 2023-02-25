@@ -23,7 +23,9 @@ jobs:
 
     steps:
       - name: Print build architecture
-        run: echo ${{ inputs.arch }}
+        run: |
+          env
+          echo ${{ inputs.arch }}
 
       - name: Set exe filename
         if: ${{ inputs.arch == 'win32'}}
@@ -182,7 +184,7 @@ jobs:
       - name: Copy xmltv.exe to artifacts
         #if: github.event_name == 'push'
         if: github.event_name == 'workflow_dispatch'
-        #run: copy ${{ env.exefile }} artifacts/${{ env.EXEFILE }}
+        #run: copy ${{ env.exefile }} artifacts/${{ env.exefile }}
         # dummy file while testing
         run: copy Makefile.PL artifacts/${{ env.EXEFILE }}
 
@@ -204,7 +206,7 @@ jobs:
         run: |
           echo "zipfilename=xmltv-${{ steps.vars.outputs.tag }}-${{ inputs.arch }}.zip" >> $env:GITHUB_OUTPUT 
           # remove subdir from output zip
-          #7z a -tzip files.zip ${{ env.EXEFILE }} .\doc\QuickStart .\doc\README-Windows.md xmltv.dtd COPYING Changes 
+          #7z a -tzip files.zip ${{ env.exefile }} .\doc\QuickStart .\doc\README-Windows.md xmltv.dtd COPYING Changes 
           7z a -tzip files.zip .\doc\QuickStart .\doc\README-Windows.md xmltv.dtd COPYING Changes 
 
       - name: Copy zip to artifacts
@@ -256,7 +258,7 @@ jobs:
       - name: test github.inputs.arch
         run: echo "${{ github.inputs.arch }}"
       - name: test env.exefile
-        run: echo "${{env.exefile}}"
+        run: echo "${{env.EXEFILE}}"
         
         
       - name: test
