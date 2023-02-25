@@ -249,20 +249,18 @@ jobs:
       SSH_AUTH_SOCK: /tmp/ssh_agent.sock
 
     steps:
-      - name: test
+      - name: test INPUT_ARCH
         run: echo "${{ env.INPUT_ARCH }}"
-      - name: test
+      - name: test inputs.arch
         run: echo "${{ inputs.arch }}"
-      - name: test
+      - name: test github.inputs.arch
         run: echo "${{ github.inputs.arch }}"
-      - name: test
+      - name: test env.exefile
         run: echo "${{env.exefile}}"
         
         
       - name: test
-        env: 
-            super_secret: ${{ secrets.ALPHA_SSH_HOST }}
-        run: echo "${{env.super_secret}}"
+        run: echo "${{secrets.ALPHA_SSH_HOST}}"
             
         
       - name: Print build architecture
