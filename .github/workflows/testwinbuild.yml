@@ -145,6 +145,7 @@ jobs:
           echo "tag=$gittag" >> $env:GITHUB_OUTPUT
           echo "release=$gitcommits" >> $env:GITHUB_OUTPUT
           echo "hash=$githash" >> $env:GITHUB_OUTPUT
+          echo "$gitid"
 
       - name: Check release distance
         run: echo release=${{ steps.vars.outputs.release }}
