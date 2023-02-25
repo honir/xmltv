@@ -234,6 +234,8 @@ jobs:
           retention-days: 15
           
       - name: Upload zip file to Release
+        #if: github.event_name == 'push'
+        if: github.event_name == 'workflow_dispatch'
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}

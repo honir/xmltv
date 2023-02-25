@@ -174,23 +174,28 @@ jobs:
         run: gmake
 
       - name: gmake install
-        if: github.event_name == 'push'
+        #if: github.event_name == 'push'
+        if: github.event_name == 'workflow_dispatch'
         run: gmake pure_install
 
       - name: gmake xmltv.exe
-        if: github.event_name == 'push'
+        #if: github.event_name == 'push'
+        if: github.event_name == 'workflow_dispatch'
         run: gmake ${{ env.EXEFILE }}
 
       - name: Create target artifact directory
-        if: github.event_name == 'push'
+        #if: github.event_name == 'push'
+        if: github.event_name == 'workflow_dispatch'
         run: md "artifacts"
 
       - name: Copy xmltv.exe to artifacts
-        if: github.event_name == 'push'
+        #if: github.event_name == 'push'
+        if: github.event_name == 'workflow_dispatch'
         run: copy ${{ env.EXEFILE }} artifacts/${{ env.EXEFILE }}
 
       - name: Publish xmltv.exe artifact
-        if: github.event_name == 'push'
+        #if: github.event_name == 'push'
+        if: github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v3
         with:
           name: ${{ env.EXEFILE }}
@@ -200,7 +205,8 @@ jobs:
       - name: Create zip
         # upload-artifact will unfortunately create a double zip
         #   https://github.com/actions/upload-artifact#limitations
-        if: github.event_name == 'push'
+        #if: github.event_name == 'push'
+        if: github.event_name == 'workflow_dispatch'
         id: files
         run: |
           echo "zipfilename=xmltv-${{ steps.vars.outputs.tag }}-${{ inputs.arch }}.zip" >> $env:GITHUB_OUTPUT 
@@ -208,14 +214,16 @@ jobs:
           7z a -tzip files.zip ${{ env.EXEFILE }} .\doc\QuickStart .\doc\README-Windows.md xmltv.dtd COPYING Changes 
 
       - name: Copy zip to artifacts
-        if: github.event_name == 'push'
+        #if: github.event_name == 'push'
+        if: github.event_name == 'workflow_dispatch'
         run: |
           copy files.zip artifacts/${{ steps.files.outputs.zipfilename }}
           # need to remove the .exe as upload-artifact does the whole folder
           remove-item artifacts/${{ env.EXEFILE }} -Force
 
       - name: Publish zip artifact
-        if: github.event_name == 'push'
+        #if: github.event_name == 'push'
+        if: github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v3
         with:
           name: ${{ steps.files.outputs.zipfilename }}
@@ -223,6 +231,8 @@ jobs:
           retention-days: 15
 
       - name: Upload zip file to Release
+        #if: github.event_name == 'push'
+        if: github.event_name == 'workflow_dispatch'
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
@@ -243,8 +253,10 @@ jobs:
     # skip this workflow unless on XMLTV GH
     # and only run for 64-bit build
     if: github.repository == 'XMLTV/xmltv'
-      && github.event_name == 'push'
+      && github.event_name == 'workflow_dispatch'
       && inputs.arch == 'win64'
+
+      #&& github.event_name == 'push'
 
     env:
       EXEFILE: ${{ needs.windows-build.outputs.exefile }}
