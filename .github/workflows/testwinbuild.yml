@@ -239,7 +239,7 @@ jobs:
       
     if: github.repository == 'honir/xmltv'
       && github.event_name == 'workflow_dispatch'
-      #&& github.env.INPUT_ARCH == 'win32'
+      && github.env.INPUT_ARCH == 'win32'
       #&& github.env.exefile == 'xmltv.exe'
 
     runs-on: ubuntu-latest
@@ -250,7 +250,7 @@ jobs:
 
     steps:
       - name: test
-        run: echo "${{github.env.INPUT_ARCH}}"
+        run: echo "${{env.INPUT_ARCH}}"
         
       - name: Print build architecture
         run: echo ${{ inputs.arch }}
@@ -271,6 +271,7 @@ jobs:
       - name: Check if SSH params set
         id: vars
         run: |
+          echo "${{ secrets.ALPHA_SSH_HOST }}"
           echo "ssh_ready=${{ secrets.ALPHA_SSH_HOST != '' }}" >> $GITHUB_OUTPUT
 
       - name: Check if SSH defined
@@ -292,5 +293,5 @@ jobs:
       - name: Upload files
         if: steps.vars.outputs.ssh_ready == 'true'
         run: |
-          scp -o StrictHostKeyChecking=no -o HostKeyAlgorithms=+ssh-rsa -P ${{ secrets.ALPHA_SSH_PORT }} ${{ env.exefile }} ${{ secrets.ALPHA_SSH_USER }}@${{ secrets.ALPHA_SSH_HOST }}:${{ secrets.ALPHA_SSH_REMOTE_DIR }}
+  ###        scp -o StrictHostKeyChecking=no -o HostKeyAlgorithms=+ssh-rsa -P ${{ secrets.ALPHA_SSH_PORT }} ${{ env.exefile }} ${{ secrets.ALPHA_SSH_USER }}@${{ secrets.ALPHA_SSH_HOST }}:${{ secrets.ALPHA_SSH_REMOTE_DIR }}
 
