@@ -269,7 +269,9 @@ jobs:
         
         
       - name: test needs
-        run: echo "${{ needs.windows_build.outputs.exefilename }}"
+        run: |
+          echo "${{ needs.windows_build.outputs.exefilename }}"
+          console.log(${{ needs.windows_build.outputs }})
             
         
       - name: Print build architecture
