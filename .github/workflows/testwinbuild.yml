@@ -33,7 +33,11 @@ jobs:
         shell: powershell
 
       - name: Print exe filename
-        run: echo "${{ env.EXEFILE }}"
+        id: setvars
+        run: |
+          echo "${{ env.EXEFILE }}"
+          # make the env var available to other jobs
+          echo "exefile=${{ env.EXEFILE }}" >> $env:GITHUB_OUTPUT
 
       #- name: Uninstall existing strawberry perl
         #if: ${{ inputs.arch == 'win32' }}
@@ -262,7 +266,7 @@ jobs:
         
         
       - name: test
-        run: echo "${{secrets.ALPHA_SSH_HOST}}"
+        run: echo "${{ jobs.windows_build.steps.setvars.outputs.exefile }}"
             
         
       - name: Print build architecture
