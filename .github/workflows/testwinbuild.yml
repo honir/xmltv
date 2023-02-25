@@ -160,8 +160,8 @@ jobs:
           sed -ri "s/^xmltv.exe :: /xmltv32.exe :: /" Makefile.PL
           sed -ri "s/pp_autolink -o xmltv.exe/pp_autolink -o xmltv32.exe/" Makefile.PL
 
-      - name: perl Makefile.PL
-        run: perl Makefile.PL -default NO_PACKLIST=1 NO_PERLLOCAL=1
+      #- name: perl Makefile.PL
+        #run: perl Makefile.PL -default NO_PACKLIST=1 NO_PERLLOCAL=1
 
       #- name: gmake
         #run: gmake
@@ -193,7 +193,8 @@ jobs:
       - name: Create zip
         # upload-artifact will unfortunately create a double zip  
         #   https://github.com/actions/upload-artifact#limitations
-        if: github.event_name == 'push'
+        #if: github.event_name == 'push'
+        if: github.event_name == 'manual trigger'
         id: files
         run: |
           echo "zipfilename=xmltv-${{ steps.vars.outputs.tag }}-${{ inputs.arch }}.zip" >> $env:GITHUB_OUTPUT 
@@ -201,19 +202,46 @@ jobs:
           7z a -tzip files.zip ${{ env.exefile }} .\doc\QuickStart .\doc\README-Windows.md xmltv.dtd COPYING Changes 
 
       - name: Copy zip to artifacts
-        if: github.event_name == 'push'
+        #if: github.event_name == 'push'
+        if: github.event_name == 'manual trigger'
         run: |
           copy files.zip artifacts/${{ steps.files.outputs.zipfilename }}
           # need to remove the .exe as upload-artifact does the whole folder
           remove-item artifacts/${{ env.exefile }} -Force
 
       - name: Publish zip artifact
-        if: github.event_name == 'push'
+        #if: github.event_name == 'push'
+        if: github.event_name == 'manual trigger'
         uses: actions/upload-artifact@v3
         with:
           name: ${{ steps.files.outputs.zipfilename }}
           path: artifacts
           retention-days: 15
+
+
+
+
+        #-------------------------------------------------------------------------------------------  
+        # dummy exe during testing
+        
+      - name: Copy "exe" to artifacts
+        #if: github.event_name == 'push'
+        if: github.event_name == 'manual trigger'
+        run: |
+          remove-item artifacts/files.zip -Force
+          copy Makefile.PL artifacts/${{ steps.files.outputs.zipfilename }}
+
+      - name: Publish zip artifact
+        #if: github.event_name == 'push'
+        if: github.event_name == 'manual trigger'
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.files.outputs.zipfilename }}
+          path: artifacts
+          retention-days: 1
+
+        #-------------------------------------------------------------------------------------------
+
 
 
 
