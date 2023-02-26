@@ -324,7 +324,9 @@ jobs:
 
     strategy:
       matrix:
-        target: [win64, win32]
+        #target: [win64, win32]
+        target: [win64]
+        #target: [win32]
 
     uses: ./.github/workflows/winbuild.yml
     with:
