@@ -262,6 +262,7 @@ jobs:
 
     env:
       EXEFILE: ${{ needs.windows-build.outputs.exefile }}
+      ZIPFILE: ${{ needs.windows-build.outputs.zipfile }}
       # Use the same ssh-agent socket across all steps
       SSH_AUTH_SOCK: /tmp/ssh_agent.sock
 
