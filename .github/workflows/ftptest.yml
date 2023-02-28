@@ -98,7 +98,11 @@ jobs:
 
       - name: Set default download (for Windows & Linux)
         if: steps.vars2.outputs.ssh_ready == 'true'
-        run: |          
+        run: |
+          # returns a json object which can be decoded with jq if you like
+          # https://stackoverflow.com/questions/71359333/fetch-json-field-value-from-curl-response-in-github-action
+          #https://stackoverflow.com/questions/69774778/how-to-use-curls-response-in-other-run-commands-in-github-actions
           curl -H "Accept: application/json" -X PUT -d "default=windows" -d "api_key=${{ secrets.SF_API_KEY }}" https://sourceforge.net/projects/xmltv/files/v${{ steps.vars.outputs.tag }}/${{ env.ZIPFILE }}
+          #
           curl -H "Accept: application/json" -X PUT -d "default=linux" -d "api_key=${{ secrets.SF_API_KEY }}" https://sourceforge.net/projects/xmltv/files/v${{ steps.vars.outputs.tag }}/XMLTV%20${{ steps.vars.outputs.tag }}.tar.gz
 
