@@ -20,3 +20,4 @@ t_*_cache
 t_*.diff
 t_*.log
 t_*.xml
+.github/workflows/__noteswinbuild.yml

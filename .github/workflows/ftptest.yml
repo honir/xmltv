@@ -100,5 +100,5 @@ jobs:
         if: steps.vars2.outputs.ssh_ready == 'true'
         run: |          
           curl -H "Accept: application/json" -X PUT -d "default=windows" -d "api_key=${{ secrets.SF_API_KEY }}" https://sourceforge.net/projects/xmltv/files/v${{ steps.vars.outputs.tag }}/${{ env.ZIPFILE }}
-          curl -H "Accept: application/json" -X PUT -d "default=linux" -d "api_key=${{ secrets.SF_API_KEY }}" https://sourceforge.net/projects/xmltv/files/v${{ steps.vars.outputs.tag }}/XMLTV ${{ steps.vars.outputs.tag }}.tar.gz
+          curl -H "Accept: application/json" -X PUT -d "default=linux" -d "api_key=${{ secrets.SF_API_KEY }}" https://sourceforge.net/projects/xmltv/files/v${{ steps.vars.outputs.tag }}/XMLTV%20${{ steps.vars.outputs.tag }}.tar.gz
 
