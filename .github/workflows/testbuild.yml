@@ -28,9 +28,9 @@ jobs:
 
     strategy:
       matrix:
-        target: [win64, win32]
+        #target: [win64, win32]
         #target: [win32]
-        #target: [win64]
+        target: [win64]
 
     uses: ./.github/workflows/testwinbuild.yml
     with:
