@@ -94,5 +94,11 @@ jobs:
       - name: Upload files
         if: steps.vars2.outputs.ssh_ready == 'true'
         run: |
-          scp -o StrictHostKeyChecking=no -o HostKeyAlgorithms=+ssh-rsa -P ${{ secrets.SF_SSH_PORT }} artifacts/${{ env.EXEFILE }} artifacts/${{ env.ZIPFILE }} ${{ secrets.SF_SSH_USER }}@${{ secrets.SF_SSH_HOST }}:${{ secrets.SF_SSH_REMOTE_DIR }}/v${{ steps.vars.outputs.tag }}
+          scp -o StrictHostKeyChecking=no -o HostKeyAlgorithms=+ssh-rsa -P ${{ secrets.SF_SSH_PORT }} artifacts/${{ env.ZIPFILE }} ${{ secrets.SF_SSH_USER }}@${{ secrets.SF_SSH_HOST }}:${{ secrets.SF_SSH_REMOTE_DIR }}/v${{ steps.vars.outputs.tag }}
+
+      - name: Set default download (for Windows & Linux)
+        if: steps.vars2.outputs.ssh_ready == 'true'
+        run: |          
+          curl -H "Accept: application/json" -X PUT -d "default=windows" -d "api_key=${{ secrets.SF_API_KEY }}" https://sourceforge.net/projects/xmltv/files/v${{ steps.vars.outputs.tag }}/${{ env.ZIPFILE }}
+          curl -H "Accept: application/json" -X PUT -d "default=linux" -d "api_key=${{ secrets.SF_API_KEY }}" https://sourceforge.net/projects/xmltv/files/v${{ steps.vars.outputs.tag }}/XMLTV ${{ steps.vars.outputs.tag }}.tar.gz
 
