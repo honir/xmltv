@@ -281,15 +281,6 @@ END
 my @opt_components
   = (
 
-     # { name => 'tv_grab_ar',
-     #   blurb => 'Grabber for Argentina',
-     #   exes => [ 'grab/ar/tv_grab_ar' ],
-     #   prereqs => { 'Date::Language'    => 0,
-     #                'HTML::Entities'    => 0,
-     #                'HTML::TreeBuilder' => 0,
-     #                'HTTP::Cookies'     => 0, },
-     # },
-
      { name => 'tv_grab_ch_search',
        blurb => 'Grabber for Switzerland',
        exes => [ 'grab/ch_search/tv_grab_ch_search' ],
@@ -304,13 +295,6 @@ my @opt_components
                     'URI::URL'          => 0, },
      },
 
-     # { name => 'tv_grab_dk_dr',
-     #   blurb => 'Grabber for Denmark (dr.dk)',
-     #   exes => [ 'grab/dk_dr/tv_grab_dk_dr' ],
-     #   prereqs => { 'DateTime'       => 0,
-     #                'IO::Scalar'     => 0, },
-     # },
-
      { name => 'tv_grab_eu_epgdata',
        blurb => '$$ Grabber for some European countries (epgdata.com)',
        exes => [ 'grab/eu_epgdata/tv_grab_eu_epgdata' ],
@@ -321,15 +305,6 @@ my @opt_components
                     'HTML::Entities' => 0,
                     'HTTP::Request::Common' => 0, },
      },
-
-#2022-01-27 rmeden - broken due to upstream changes
-#     { name => 'tv_grab_eu_xmltvse',
-#       blurb => 'Grabber for Europe (xmltv.se / xmltvse)',
-#       exes => [ 'grab/eu_xmltvse/tv_grab_eu_xmltvse' ],
-#       prereqs => { 'Compress::Zlib' => 0,
-#                    'HTTP::Cache::Transparent' => 0,
-#                    'IO::Scalar'     => 0, },
-#     },
 
      { name  => 'tv_grab_fi',
        blurb => 'Grabber for Finland',
@@ -489,28 +464,6 @@ my @opt_components
                     'DateTime::Format::Strptime' => 0,
                     'URI::Encode' => 0, },
      },
-
-     # { name => 'tv_grab_tr',
-     #   blurb => 'Grabber for Turkey (Digiturk)',
-     #   exes => [ 'grab/tr/tv_grab_tr' ],
-     #   prereqs => { 'Date::Parse'    => 0,
-     #                'DateTime'       => 0,
-     #                'HTTP::Cache::Transparent' => 1.0,
-     #                'HTTP::Cookies'  => 0,
-     #                'URI::Escape'    => 0, },
-     # },
-
-     # { name => 'tv_grab_uk_bleb',
-     #   blurb => 'Fast alternative grabber for the UK',
-     #   exes => [ 'grab/uk_bleb/tv_grab_uk_bleb' ],
-     #   pl_files => { 'grab/uk_bleb/tv_grab_uk_bleb.PL' => 'grab/uk_bleb/tv_grab_uk_bleb' },
-     #   share_files => { 'grab/uk_bleb/icon_urls' => 'tv_grab_uk_bleb/icon_urls' },
-     #   to_clean => [ 'grab/uk_bleb/tv_grab_uk_bleb' ],
-     #   deps => [ 'grab/uk_bleb/tv_grab_uk_bleb' => [ 'grab/uk_bleb/tv_grab_uk_bleb.in' ] ],
-     #   grab_need_share => [ 'uk_bleb' ],
-     #   prereqs => { 'Archive::Zip' => 0,
-     #                'IO::Scalar' => 0, },
-     # },
 
      { name => 'tv_grab_uk_tvguide',
        blurb => 'Grabber for UK and Ireland using TV Guide website',
