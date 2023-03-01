@@ -243,9 +243,22 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: artifacts/${{ steps.files.outputs.zipfilename }}
           asset_name: ${{ steps.files.outputs.zipfilename }}
-          tag: "v1.2.1"
+          tag: "v${{ steps.vars.outputs.tag }}"
           overwrite: true
-          asset_content_type: application/zip
+
+
+      ## alternative action - errors:  "Node.js 12 actions are deprecated."
+      #- name: Upload zip file to Release
+      #  #if: github.event_name == 'push'
+      #  if: github.event_name == 'workflow_dispatch'
+      #  uses: actions/upload-release-asset@v1.0.1
+      #  env:
+      #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #  with:
+      #    upload_url: https://github.com/honir/xmltv/releases/tag/v${{ steps.vars.outputs.tag }}
+      #    asset_path: artifacts/${{ steps.files.outputs.zipfilename }}
+      #    asset_name: ${{ steps.files.outputs.zipfilename }}
+      #    asset_content_type: application/zip
 
 
 
