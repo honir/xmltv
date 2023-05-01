@@ -74,7 +74,7 @@ my $generator_info_url	= $GRABBER_URL;
 my $source_info_name	= $SOURCE_NAME;
 my $source_info_url		= $SOURCE_URL;
 #
-my $grabberid = '2023-03-25.1545';
+my $grabberid = '2023-05-01.1645';
 
 # ------------------------------------------------------------------------------------------------------------------------------------- #
 # Use XMLTV::Options::ParseOptions to parse the options and take care of the basic capabilities that a tv_grabber should have
@@ -201,6 +201,8 @@ sub fetch_listings {
 		# http://www.tvguide.co.uk/channellisting.asp?ch=86&cTime=3/18/2013
 
 		my $baseurl = $ROOT_URL.'channellistings.asp';
+
+		debug('+' x 80);
 
 		# Now grab listings for each channel on each day, according to the options in $opt
 		#
@@ -751,6 +753,8 @@ sub fetch_listings {
 			}
 
 			$bar->update if defined $bar;
+
+			debug('-' x 30);
 		}
 	}
 }
