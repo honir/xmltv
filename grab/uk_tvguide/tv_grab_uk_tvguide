@@ -277,7 +277,7 @@ sub fetch_listings {
 						}
 					}
 
-					# type	-- seen in data: "movie", "episode"
+					# type  -- seen in data: "movie", "episode"
 					my $showtype = $show->{type};
 					if ($showtype eq 'movie') {
 						# build for future expansion
@@ -304,7 +304,7 @@ sub fetch_listings {
 					}
 
 					# year
-					# 	strip this off the title e.g. "A Useful Life (2010)"
+					#    strip this off the title e.g. "A Useful Life (2010)"
 					my ($showyear) = $prog{'title'}->[0][0] =~ /.*\((\d\d\d\d)\)$/;
 					if ($showyear) {
 						$prog{'date'} = $showyear;
