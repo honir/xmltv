@@ -75,7 +75,7 @@ my $generator_info_url	= $GRABBER_URL;
 my $source_info_name	= $SOURCE_NAME;
 my $source_info_url		= $SOURCE_URL;
 #
-my $grabberid = '2023-09-19.1712';
+my $grabberid = '2023-09-19.1724';
 
 # ------------------------------------------------------------------------------------------------------------------------------------- #
 # Use XMLTV::Options::ParseOptions to parse the options and take care of the basic capabilities that a tv_grabber should have
@@ -271,7 +271,7 @@ sub fetch_listings {
 					# desc
 					my $showdesc = $show->{summary_short};
 					if ($showdesc) {
-						$showdesc .= '.' if ( (length $showdesc) && ((substr $showdesc,-1,1) ne '.') );	# append a fullstop
+						$showdesc .= '.' if ( (length $showdesc) && $showdesc =~ /[^\.\?!]$/ );	   # append a fullstop
 						if (length $showdesc) {
 							$prog{'desc'} = [[ encode('utf-8', $showdesc), 'en' ]];
 						}
