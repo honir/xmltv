@@ -75,7 +75,7 @@ my $generator_info_url	= $GRABBER_URL;
 my $source_info_name	= $SOURCE_NAME;
 my $source_info_url		= $SOURCE_URL;
 #
-my $grabberid = '2023-09-19.0754';
+my $grabberid = '2023-09-19.1712';
 
 # ------------------------------------------------------------------------------------------------------------------------------------- #
 # Use XMLTV::Options::ParseOptions to parse the options and take care of the basic capabilities that a tv_grabber should have
@@ -146,7 +146,7 @@ loadmapconf();
 # Progress Bar :)
 my $bar = new XMLTV::ProgressBar({
 		name => "Fetching listings",
-		count => (scalar @{$conf->{channel}}) * ($opt->{days} + 1)		# +1 added for the extra day necessary for <06:00 programmes
+		count => scalar @{$conf->{channel}}
 }) unless ($opt->{quiet} || $opt->{debug});
 
 
@@ -172,6 +172,7 @@ fetch_listings();
 # Progress Bar
 $bar->finish() && undef $bar if defined $bar;
 
+print STDERR "\n".'Writing output file'."\n" unless ($opt->{quiet});
 
 
 # ------------------------------------------------------------------------------------------------------------------------------------- #
@@ -357,6 +358,8 @@ sub fetch_listings {
 
 				}
 			}
+
+			$bar->update if defined $bar;
 		}
 	}
 }
