@@ -75,7 +75,7 @@ my $generator_info_url	= $GRABBER_URL;
 my $source_info_name	= $SOURCE_NAME;
 my $source_info_url		= $SOURCE_URL;
 #
-my $grabberid = '2023-09-19.0739';
+my $grabberid = '2023-09-19.0754';
 
 # ------------------------------------------------------------------------------------------------------------------------------------- #
 # Use XMLTV::Options::ParseOptions to parse the options and take care of the basic capabilities that a tv_grabber should have
@@ -121,6 +121,9 @@ HTTP::Cache::Transparent::init( {
 config_check();
 
 
+if (defined $opt->{nodetailspage}) {
+	print STDERR "Option 'nodetailspage' is deprecated and will have no effect"."\n" unless ($opt->{quiet});
+}
 if (defined $opt->{method}) {
 	print STDERR "Option 'method' is deprecated and will have no effect"."\n" unless ($opt->{quiet});
 }
@@ -827,14 +830,14 @@ tv_grab_uk_tvguide --usage
 
 tv_grab_uk_tvguide --version
 
-tv_grab_uk_tvguide --configure [--config-file FILE] [--gui OPTION] [--method N]
-                   [--makeignorelist FILE] [--useignorelist FILE] [--debug]
+tv_grab_uk_tvguide --configure [--config-file FILE] [--gui OPTION]
+                   [--debug]
 
 tv_grab_uk_tvguide [--config-file FILE] [--output FILE] [--days N]
-                   [--offset N] [--nodetailspage]  [--legacychannels]
+                   [--offset N] [--legacychannels]
                    [--quiet] [--debug]
 
-tv_grab_uk_tvguide --list-channels [--output FILE] [--method N] [--debug]
+tv_grab_uk_tvguide --list-channels [--output FILE] [--debug]
 
 =head1 DESCRIPTION
 
@@ -861,43 +864,17 @@ OPTION may be 'Tk'.
 Additional allowed values of OPTION are 'Term' for normal terminal output (default)
  and 'TermNoProgressBar' to disable the use of Term::ProgressBar.
 (May not work on Windows OS.)
-	
+
 B<--days N> Grab N days. The default is 5 days.
 
 B<--offset N> Start N days in the future.  The default is to start
 from today.
-
-B<--nodetailspage> Only fetch summary information for each programme. (See discussion below).
 
 B<--legacychannels> Channel ids were made compliant with the XMLTV specification 
 in December 2020. Use --legacychannels to output channel ids in the previous format
  (i.e. number only).
 
 B<--output FILE> Write to FILE rather than standard output.
-
-B<--method N> This program has three methods for fetching the list of
-channels available. The preferred method can be overridden with an option of
-either --method 1 or --method 2 to use one of the two alternative methods.
-
-If no --method parameter is supplied then the various methods will be tried in 
-sequence until a channels list is obtained. A parameter of --method 0 will run 
-the preferred method only.
-
-Normally you should omit this parameter.
-
-B<--makeignorelist FILE> The source channel list contains many channels which
-have no programme listings available. By using a local file of channel ids
-these can be filtered out during the configure process. This option creates 
-a list of channel ids which can be excluded from your config file
-
-makeignorelist can take over an hour to run but you only need run it 
-infrequently (not every time you run --configure).
-
-B<--useignorelist FILE> Specify the file containing a list of channel ids 
-to be removed during the configure stage.
-
-This may be the file just created with --makeignorelist
-(e.g. --configure --makeignorelist myfile --useignorelist myfile )
 
 B<--quiet> Suppress the progress messages normally written to the console.
 
@@ -961,28 +938,9 @@ It may also report:
 
 Both these errors can be ignored.
 
-=head1 USING --nodetailspage
-
-This option may be useful if you have problems accessing the tvguide website:
-it will considerably speed up your grabbing, but at the expense of data richness.
-The details page has a better list of actors, as well as director's names, 
-film classifications, and background images.
-
-More significantly, the details page includes programme duration and programme end time. If you don't include the details page then your output programmes will not have stop times. Although stop times are an optional XMLTV element, many downstream programs expect them and break without them.
-
-Fortunately, these can be added by piping your xml file through the tv_sort filter: this will add stop times to all programmes except for the last programme on every channel. For example:
-
-      tv_grab_uk_tvguide --days 3 --nodetailspage | tv_sort --by-channel --output myprogrammes.xml
-
-B<NOTE:> As at January 2022 it seems the actor/director names and film classification
-is no longer present in the website, although it may be there for some channels(?). 
-Therefore you may find the --nodetailspage option useful to significantly reduce your run time.
-B<However>, the details page does include background image(s) of the programme, which is
-not present in your xml file when using --nodetailspage
-
 =head1 BE KIND
 
-If using the details page from the website then your grabbing might benefit from a more targeted strategy, rather than blithely getting all days for all channels. 
+Your grabbing might benefit from a more targeted strategy, rather than blithely getting all days for all channels. 
 
 Since the published schedule rarely changes, a strategy of grabbing the next 3 days plus the 1 newest day would give you any new programmes as well as any last minute changes. Simply fetch "--offset 0 --days 3" and concatenate it with a separate fetch of "--offset 7 --days 1".
 
@@ -991,14 +949,6 @@ For example:
 =over 6
 
 ( tv_grab_uk_tvguide --days 3 --offset 0 --output temp.xml ) && ( tv_grab_uk_tvguide --days 1 --offset 7 | tv_cat --output myprogrammes.xml temp.xml - ) && ( rm -f temp.xml )
-
-=back
-
-A similar strategy could be employed when using --nodetailspage if you have a lot of channels:
-
-=over 6
-
-( tv_grab_uk_tvguide --days 3 --offset 0 --nodetailspage | tv_sort --by-channel >temp.xml ) && ( tv_grab_uk_tvguide --days 1 --offset 7 --nodetailspage | tv_sort --by-channel | tv_cat --output myprogrammes.xml temp.xml - ) && ( rm -f temp.xml )
 
 =back
 
