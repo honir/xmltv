@@ -274,7 +274,7 @@ jobs:
       #&& github.event_name == 'push'
       #&& inputs.arch == 'win64'
       
-    if: github.repository == 'honir/xmltv'
+    if: github.repository == 'honir/xmltvXXXX'
       && github.event_name == 'workflow_dispatch'
       
       #&& inputs.arch == 'win64'
