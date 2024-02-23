@@ -20,7 +20,8 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    if: github.repository == 'XMLTV/xmltv'
+    #if: github.repository == 'XMLTV/xmltv'
+    if: github.repository == 'honir/xmltv'
     
     env:
       RPM_PKG_MGR: dnf
@@ -316,6 +317,9 @@ jobs:
   windows-build:
     name: Build on Windows
 
+    if: github.repository == 'XMLTV/xmltv'
+
+    
     # Build Windows self-extracting executables.
     # Build 32-bit and 64-bit versions.
     # Strictly speaking we only need the 32-bit version (since that will also run 
