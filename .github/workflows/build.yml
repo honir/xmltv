@@ -344,7 +344,7 @@ jobs:
     
 
     #if: github.repository == 'XMLTV/xmltv'
-    if: github.repository == 'honir/xmltv'
+    #if: github.repository == 'honir/xmltv'
 
     runs-on: macos-latest
 
@@ -355,17 +355,6 @@ jobs:
       - name: Install dependencies
         run: brew install perl cpanminus openssl sqlite tcl-tk
 
-
-      - name: Whereis cpan
-        run: which cpanm
-        
-      - name: version cpan
-        run: /opt/homebrew/bin/cpanm --version
-        
-      - name: whatsin cpan
-        run: ls -lah /usr/local/bin
-
-        
       - name: Install perl requirements
         run: >
           perl /opt/homebrew/bin/cpanm --notest --no-interactive
