@@ -20,8 +20,8 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    #if: github.repository == 'XMLTV/xmltv'
-    if: github.repository == 'honir/xmltv'
+    if: github.repository == 'XMLTV/xmltv'
+    #if: github.repository == 'honir/xmltv'
     
     env:
       RPM_PKG_MGR: dnf
@@ -343,7 +343,8 @@ jobs:
     name: Build on macOS
     
 
-    if: github.repository == 'XMLTV/xmltv'
+    #if: github.repository == 'XMLTV/xmltv'
+    if: github.repository == 'honir/xmltv'
 
     runs-on: macos-latest
 
@@ -354,6 +355,11 @@ jobs:
       - name: Install dependencies
         run: brew install perl cpanminus openssl sqlite tcl-tk
 
+
+      - name: Whereis cpan
+        run: which cpanm
+
+        
       - name: Install perl requirements
         run: >
           perl /usr/local/bin/cpanm --notest --no-interactive
