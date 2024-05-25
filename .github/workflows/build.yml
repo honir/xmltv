@@ -358,11 +358,17 @@ jobs:
 
       - name: Whereis cpan
         run: which cpanm
+        
+      - name: version cpan
+        run: /opt/homebrew/bin/cpanm --version
+        
+      - name: whatsin cpan
+        run: ls -lah /usr/local/bin
 
         
       - name: Install perl requirements
         run: >
-          perl /usr/local/bin/cpanm --notest --no-interactive
+          perl /opt/homebrew/bin/cpanm --notest --no-interactive
           Archive::Zip
           CGI
           CGI::Carp
