@@ -195,9 +195,9 @@ jobs:
       - name: Copy xmltv.exe to artifacts
         #if: github.event_name == 'push'
         if: github.event_name == 'workflow_dispatch'
-        #run: copy ${{ env.EXEFILE }} artifacts/${{ env.EXEFILE }}
-        # dummy file while testing
-        run: copy Makefile.PL artifacts/${{ env.EXEFILE }}
+        run: copy ${{ env.EXEFILE }} artifacts/${{ env.EXEFILE }}
+        ## dummy file while testing
+        #run: copy Makefile.PL artifacts/${{ env.EXEFILE }}
 
       - name: Publish xmltv.exe artifact
         #if: github.event_name == 'push'
