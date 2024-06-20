@@ -21,6 +21,4 @@ print '
 -X Test::Builder::IO::Scalar
 -X Win32::Console
 -a exe_files.txt
--M XML::Parser::Expat
--l C:/strawberry/c/bin/libexpat-1_.dll
 ';
