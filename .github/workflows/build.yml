@@ -20,8 +20,8 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    if: github.repository == 'XMLTV/xmltv'
-    #if: github.repository == 'honir/xmltv'
+    #if: github.repository == 'XMLTV/xmltv'
+    if: github.repository == 'honir/xmltv'
     
     env:
       RPM_PKG_MGR: dnf
