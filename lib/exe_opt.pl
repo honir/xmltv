@@ -21,5 +21,5 @@ print '
 -X Test::Builder::IO::Scalar
 -X Win32::Console
 -a exe_files.txt
--l libexpat-1
+-l libexpat-1_.dll
 ';
