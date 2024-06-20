@@ -20,8 +20,11 @@ jobs:
 
     runs-on: ubuntu-latest
 
+
+    # trigger a build on my test fork
     #if: github.repository == 'XMLTV/xmltv'
     if: github.repository == 'honir/xmltv'
+
     
     env:
       RPM_PKG_MGR: dnf
@@ -31,44 +34,44 @@ jobs:
     strategy:
       matrix:
         include:
-        #  - container: ubuntu:16.04
-        #    name: Ubuntu 16.04 LTS (Xenial Xerus)
-        # - container: ubuntu:18.04
-        #    name: Ubuntu 18.04 LTS (Bionic Beaver)
-        #  - container: ubuntu:20.04
-        #    name: Ubuntu 20.04 LTS (Focal Fossa)
-        #  - container: ubuntu:22.04
-        #    name: Ubuntu 22.04 LTS (Jammy Jellyfish)
-        #  - container: ubuntu:22.10
-        #    name: Ubuntu 22.10 (Kinetic Kudu)
-        #  - container: ubuntu:23.04
-        #    name: Ubuntu 23.04 (Lunar Lobster)
-        #  - container: debian:stretch
-        #    name: Debian 9 (Stretch)
-        #  - container: debian:buster
-        #    name: Debian 10 (Buster)
-        #  - container: debian:bullseye
-        #    name: Debian 11 (Bullseye)
-        #  - container: debian:bookworm
-        #    name: Debian 12 (Bookworm)
-        #  - container: fedora:34
-        #    name: Fedora 34
-        #  - container: fedora:35
-        #    name: Fedora 35
-        #  - container: fedora:36
-        #    name: Fedora 36
-        #  - container: fedora:37
-        #    name: Fedora 37
-        #  - container: fedora:38
-        #    name: Fedora 38
-        #  - container: quay.io/centos/centos:centos7
-        #    name: CentOS 7
+          - container: ubuntu:16.04
+            name: Ubuntu 16.04 LTS (Xenial Xerus)
+          - container: ubuntu:18.04
+            name: Ubuntu 18.04 LTS (Bionic Beaver)
+          - container: ubuntu:20.04
+            name: Ubuntu 20.04 LTS (Focal Fossa)
+          - container: ubuntu:22.04
+            name: Ubuntu 22.04 LTS (Jammy Jellyfish)
+          - container: ubuntu:22.10
+            name: Ubuntu 22.10 (Kinetic Kudu)
+          - container: ubuntu:23.04
+            name: Ubuntu 23.04 (Lunar Lobster)
+          - container: debian:stretch
+            name: Debian 9 (Stretch)
+          - container: debian:buster
+            name: Debian 10 (Buster)
+          - container: debian:bullseye
+            name: Debian 11 (Bullseye)
+          - container: debian:bookworm
+            name: Debian 12 (Bookworm)
+          - container: fedora:34
+            name: Fedora 34
+          - container: fedora:35
+            name: Fedora 35
+          - container: fedora:36
+            name: Fedora 36
+          - container: fedora:37
+            name: Fedora 37
+          - container: fedora:38
+            name: Fedora 38
+          - container: quay.io/centos/centos:centos7
+            name: CentOS 7
           - container: quay.io/centos/centos:stream8
             name: CentOS Stream 8
-        #  - container: quay.io/centos/centos:stream9
-        #    name: CentOS Stream 9
-        #  - container: alpine:3.17
-        #    name: Alpine Linux 3.17
+          - container: quay.io/centos/centos:stream9
+            name: CentOS Stream 9
+          - container: alpine:3.17
+            name: Alpine Linux 3.17
       fail-fast: false
 
     container:
@@ -80,21 +83,18 @@ jobs:
           . /etc/os-release && echo "OS_RELEASE_ID=$ID" >> $GITHUB_ENV
           . /etc/os-release && echo "OS_RELEASE_VERSION=$VERSION_ID" >> $GITHUB_ENV
           . /etc/os-release && echo "OS_RELEASE_VERSION_MAJOR=${VERSION_ID%%.*}" >> $GITHUB_ENV
-
           
-      - name: Use vault.centos.org repositories on CentOS 8
+      - name: Use archived repositories on CentOS 8
         run: |
           # CentOS 8 reached EOL 31 December 2021.
-          # The repositories that are configured in the container
-          # are not working anymore. Use vault.centos.org package
-          # archive instead.
+          # The repositories configured in the container are not working anymore.
+          # Use vault.centos.org package archive instead.
           find /etc/yum.repos.d/ -type f -exec sed -i 's/mirrorlist=/#mirrorlist=/g' {} +
           find /etc/yum.repos.d/ -type f -exec sed -i 's/#baseurl=/baseurl=/g' {} +
           find /etc/yum.repos.d/ -type f -exec sed -i 's/mirror.centos.org/vault.centos.org/g' {} +
         if: |
           env.OS_RELEASE_ID == 'centos' && env.OS_RELEASE_VERSION == '8'
 
-          
       - name: Adjust package manager for EL 7
         run: echo "RPM_PKG_MGR=yum" >> $GITHUB_ENV
         if: |
@@ -331,6 +331,8 @@ jobs:
   windows-build:
     name: Build on Windows
 
+
+    # trigger a build on my test fork
     if: github.repository == 'XMLTV/xmltv'
 
     
@@ -355,10 +357,12 @@ jobs:
 
   macos-build:
     name: Build on macOS
-    
 
+    
+    # trigger a build on my test fork
     if: github.repository == 'XMLTV/xmltv'
     #if: github.repository == 'honir/xmltv'
+
 
     runs-on: macos-latest
 
