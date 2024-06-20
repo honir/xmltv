@@ -31,44 +31,44 @@ jobs:
     strategy:
       matrix:
         include:
-          - container: ubuntu:16.04
-            name: Ubuntu 16.04 LTS (Xenial Xerus)
-          - container: ubuntu:18.04
-            name: Ubuntu 18.04 LTS (Bionic Beaver)
-          - container: ubuntu:20.04
-            name: Ubuntu 20.04 LTS (Focal Fossa)
-          - container: ubuntu:22.04
-            name: Ubuntu 22.04 LTS (Jammy Jellyfish)
-          - container: ubuntu:22.10
-            name: Ubuntu 22.10 (Kinetic Kudu)
-          - container: ubuntu:23.04
-            name: Ubuntu 23.04 (Lunar Lobster)
-          - container: debian:stretch
-            name: Debian 9 (Stretch)
-          - container: debian:buster
-            name: Debian 10 (Buster)
-          - container: debian:bullseye
-            name: Debian 11 (Bullseye)
-          - container: debian:bookworm
-            name: Debian 12 (Bookworm)
-          - container: fedora:34
-            name: Fedora 34
-          - container: fedora:35
-            name: Fedora 35
-          - container: fedora:36
-            name: Fedora 36
-          - container: fedora:37
-            name: Fedora 37
-          - container: fedora:38
-            name: Fedora 38
-          - container: quay.io/centos/centos:centos7
-            name: CentOS 7
+        #  - container: ubuntu:16.04
+        #    name: Ubuntu 16.04 LTS (Xenial Xerus)
+        # - container: ubuntu:18.04
+        #    name: Ubuntu 18.04 LTS (Bionic Beaver)
+        #  - container: ubuntu:20.04
+        #    name: Ubuntu 20.04 LTS (Focal Fossa)
+        #  - container: ubuntu:22.04
+        #    name: Ubuntu 22.04 LTS (Jammy Jellyfish)
+        #  - container: ubuntu:22.10
+        #    name: Ubuntu 22.10 (Kinetic Kudu)
+        #  - container: ubuntu:23.04
+        #    name: Ubuntu 23.04 (Lunar Lobster)
+        #  - container: debian:stretch
+        #    name: Debian 9 (Stretch)
+        #  - container: debian:buster
+        #    name: Debian 10 (Buster)
+        #  - container: debian:bullseye
+        #    name: Debian 11 (Bullseye)
+        #  - container: debian:bookworm
+        #    name: Debian 12 (Bookworm)
+        #  - container: fedora:34
+        #    name: Fedora 34
+        #  - container: fedora:35
+        #    name: Fedora 35
+        #  - container: fedora:36
+        #    name: Fedora 36
+        #  - container: fedora:37
+        #    name: Fedora 37
+        #  - container: fedora:38
+        #    name: Fedora 38
+        #  - container: quay.io/centos/centos:centos7
+        #    name: CentOS 7
           - container: quay.io/centos/centos:stream8
             name: CentOS Stream 8
-          - container: quay.io/centos/centos:stream9
-            name: CentOS Stream 9
-          - container: alpine:3.17
-            name: Alpine Linux 3.17
+        #  - container: quay.io/centos/centos:stream9
+        #    name: CentOS Stream 9
+        #  - container: alpine:3.17
+        #    name: Alpine Linux 3.17
       fail-fast: false
 
     container:
@@ -343,7 +343,7 @@ jobs:
     name: Build on macOS
     
 
-    #if: github.repository == 'XMLTV/xmltv'
+    if: github.repository == 'XMLTV/xmltv'
     #if: github.repository == 'honir/xmltv'
 
     runs-on: macos-latest
