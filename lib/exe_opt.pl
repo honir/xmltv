@@ -22,5 +22,5 @@ print '
 -X Win32::Console
 -a exe_files.txt
 -M XML::Parser::Expat
--l /bin/libexpat-1_.dll
+-l C:/strawberry/perl/bin/libexpat-1_.dll
 ';
