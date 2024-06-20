@@ -98,8 +98,6 @@ jobs:
           XML::Twig
           XML::Writer
           XML::TreePP
-          XML::Parser
-          XML::Parser::Expat
 
       - name: Download Packer
         # modify PAR::Packer to print our custom "don't panic" message
