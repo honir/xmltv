@@ -81,6 +81,20 @@ jobs:
           . /etc/os-release && echo "OS_RELEASE_VERSION=$VERSION_ID" >> $GITHUB_ENV
           . /etc/os-release && echo "OS_RELEASE_VERSION_MAJOR=${VERSION_ID%%.*}" >> $GITHUB_ENV
 
+          
+      - name: Use vault.centos.org repositories on CentOS 8
+        run: |
+          # CentOS 8 reached EOL 31 December 2021.
+          # The repositories that are configured in the container
+          # are not working anymore. Use vault.centos.org package
+          # archive instead.
+          find /etc/yum.repos.d/ -type f -exec sed -i 's/mirrorlist=/#mirrorlist=/g' {} +
+          find /etc/yum.repos.d/ -type f -exec sed -i 's/#baseurl=/baseurl=/g' {} +
+          find /etc/yum.repos.d/ -type f -exec sed -i 's/mirror.centos.org/vault.centos.org/g' {} +
+        if: |
+          env.OS_RELEASE_ID == 'centos' && env.OS_RELEASE_VERSION == '8'
+
+          
       - name: Adjust package manager for EL 7
         run: echo "RPM_PKG_MGR=yum" >> $GITHUB_ENV
         if: |
@@ -93,18 +107,6 @@ jobs:
 
       - name: Add powertools repo for EL 8
         run: ${{env.RPM_PKG_MGR}} config-manager --set-enabled powertools
-        if: |
-          env.OS_RELEASE_ID == 'centos' && env.OS_RELEASE_VERSION == '8'
-          
-      - name: Use vault.centos.org repositories on CentOS 8
-        run: |
-          # CentOS 8 reached EOL 31 December 2021.
-          # The repositories that are configured in the container
-          # are not working anymore. Use vault.centos.org package
-          # archive instead.
-          find /etc/yum.repos.d/ -type f -exec sed -i 's/mirrorlist=/#mirrorlist=/g' {} +
-          find /etc/yum.repos.d/ -type f -exec sed -i 's/#baseurl=/baseurl=/g' {} +
-          find /etc/yum.repos.d/ -type f -exec sed -i 's/mirror.centos.org/vault.centos.org/g' {} +
         if: |
           env.OS_RELEASE_ID == 'centos' && env.OS_RELEASE_VERSION == '8'
         
