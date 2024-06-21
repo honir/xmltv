@@ -108,7 +108,7 @@ jobs:
           gzip -d PAR-Packer-1.063.tar.gz
           tar xf PAR-Packer-1.063.tar
           cd PAR-Packer-1.063
-          sed -i '/if ( rc == -1 && errno != EEXIST)/i\    if ( rc == 0 ) fprintf(stderr,\"Note: This will take a while on first run\\\n\");' myldr/boot.c
+          sed -i '/if ( rc == -1 && errno != EEXIST)/i\    if ( rc == 0 ) fprintf(stderr,\"Note: This will take up to 5 minutes on first run\\\n\");' myldr/boot.c
 
       - name: Install Packer
         working-directory: /temp
