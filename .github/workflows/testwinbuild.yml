@@ -92,6 +92,7 @@ jobs:
           Unicode::String
           Unicode::UTF8simple
           URI::Encode
+          Win32::Locale
           XML::DOM
           XML::LibXML
           XML::LibXSLT
