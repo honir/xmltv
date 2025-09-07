@@ -17,7 +17,8 @@ jobs:
   windows-build:
     name: Build on Windows ${{ inputs.arch }}
 
-    runs-on: windows-latest
+    #runs-on: windows-latest
+    runs-on: windows-2025
 
     strategy:
       fail-fast: false
